@@ -130,13 +130,19 @@
                                 </a>
                             @endif
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('admin.CustomerManagement')}}">
+                                <i class="fa fa-users menu-icon"></i>
+                                <span class="menu-title">Customer Management</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <i class="fa fa-warehouse menu-icon"></i>
                                 <span class="menu-title">Stock Management</span>
                             </a>
                         </li>
+
 
                         <li class="nav-item">
                             <a class="nav-link" href="#">

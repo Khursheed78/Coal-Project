@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-
+    public function loginView(){
+        return view('LoginView');
+    }
     // Registration View
     public function registrationView(){
         return view('registration');
@@ -47,9 +49,7 @@ class AuthController extends Controller
         return redirect()->route('loginView')->with('success', 'Registration successful! Please login.');
     }
     // Login View
-    public function loginView(){
-        return view('LoginView');
-    }
+
     public function login(Request $request)
     {
         $request->validate([

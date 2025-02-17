@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Customer;
 use App\Models\Supplier;
 use App\Models\Subjects;
 use App\Models\User;
@@ -18,17 +19,26 @@ class AdminController extends Controller
         return view('admin.dashboard',compact('suppliers'));
     }
 
-    public function managerdashboard(){
-        $suppliers = Supplier::all();
-        return view('manager.dashboard',compact('suppliers'));
-    }
-    public function SupplierManagement()
+    // public function managerdashboard(){
+    //     $suppliers = Supplier::all();
+    //     return view('manager.dashboard',compact('suppliers'));
+    // }
+    public function SupplierManagement(Request $request)
     {
-       $suppliers = Supplier::paginate(5);
 
-        return view('admin.suppliermanagement',compact('suppliers'));
+        $suppliers = Supplier::paginate(5);
 
+        return view('admin.suppliermanagement', compact('suppliers'));
     }
+    public function searchSuppliers(Request $request)
+    {
+        $query = $request->input('phone');
+
+        $suppliers = Supplier::where('phone', 'LIKE', "%$query%")->get();
+
+        return response()->json($suppliers);
+    }
+
 
     public function StoreSupplier(Request $request)
     {
@@ -38,6 +48,7 @@ class AdminController extends Controller
             'contact_person' => 'nullable|string|max:255',
             'phone'          => 'nullable|numeric|digits_between:7,15',
             'email'          => 'required|email|unique:suppliers,email',
+            'balance'        => 'required|numeric',
             'address'        => 'nullable|string|max:500',
         ]);
 
@@ -47,6 +58,7 @@ class AdminController extends Controller
             'contact_person' => $request->contact_person,
             'phone'          => $request->phone,
             'email'          => $request->email,
+            'balance'          => $request->balance,
             'address'        => $request->address,
         ]);
 
@@ -77,12 +89,10 @@ public function UpdateSupplier(Request $request, $id) {
         'contact_person' => $request->contact_person,
         'phone' => $request->phone,
         'email' => $request->email,
+        'balance' => $request->balance,
         'address' => $request->address,
 
     ]);
-
-
-
     return response()->json([
         'success' => true,
         'message' => 'Class updated successfully!',
@@ -91,8 +101,51 @@ public function UpdateSupplier(Request $request, $id) {
 }
 
 
+//Customers
+public function CustomerManagement()
+{
+   $suppliers = Customer::paginate(5);
 
+    return view('admin.customermanagement',compact('suppliers'));
+    // return view('Admin.CustomerManagement');
 
+}
+
+public function StoreCustomer(Request $request)
+{
+    // Validate input data
+    $request->validate([
+        'customer'  => 'required|string|max:255',
+        'contact_person' => 'nullable|string|max:255',
+        'phone'          => 'nullable|numeric|digits_between:7,15',
+        'email'          => 'required|email|unique:customers,email',
+        'balance'        => 'required|numeric',
+        'address'        => 'nullable|string|max:500',
+    ]);
+
+    $customer = Customer::create([
+        'customer'  => $request->customer,
+        'contact_person' => $request->contact_person,
+        'phone'          => $request->phone,
+        'email'          => $request->email,
+        'balance'          => $request->balance,
+        'address'        => $request->address,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Customer added successfully!',
+        'data'    => $customer
+    ]);
+}
+public function searchCustomer(Request $request)
+{
+    $query = $request->input('phone');
+
+    $customer = Customer::where('phone', 'LIKE', "%$query%")->get();
+
+    return response()->json($customer);
+}
 }
 
 

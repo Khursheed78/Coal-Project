@@ -6,14 +6,15 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Supplier</h4>
+                        <h4 class="card-title">Customer</h4>
+                        <!-- Button to Open Modal -->
                         @if (Auth::user()->role === 'admin')
                             <!-- Button to Open Modal -->
                             <div class="row">
                                 <div class="col-6">
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#SupplierModal">
-                                        Add New Supplier
+                                        Add New Customer
                                     </button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
@@ -25,12 +26,13 @@
                                 </div>
                             </div>
                         @endif
+
                         <div class="table-responsive">
                             <table id="classTable" class="table table-bordered mt-4 table-striped">
                                 <thead style="border-bottom: 2px solid black;">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Supplier Name</th>
+                                        <th>Customer Name</th>
                                         <th>Contact Person</th>
                                         <th>Phone</th>
                                         <th>Email</th>
@@ -43,7 +45,7 @@
                                     @foreach ($suppliers as $supplier)
                                         <tr id="classRow_{{ $supplier->id }}">
                                             <td>{{ $supplier->id }}</td>
-                                            <td>{{ $supplier->supplier_name }}</td>
+                                            <td>{{ $supplier->customer }}</td>
                                             <td>{{ $supplier->contact_person }}</td>
                                             <td>{{ $supplier->phone }}</td>
                                             <td>{{ $supplier->email }}</td>
@@ -54,14 +56,11 @@
                                             </td>
                                             <td>{{ $supplier->balance }}</td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm editClass"
-                                                    data-id="{{ $supplier->id }}"
+                                                <button class="btn btn-primary btn-sm editClass" data-id="{{ $supplier->id }}"
                                                     data-supplier_name="{{ $supplier->supplier_name }}"
                                                     data-contact_person="{{ $supplier->contact_person }}"
-                                                    data-phone="{{ $supplier->phone }}"
-                                                    data-email="{{ $supplier->email }}"
-                                                    data-phone="{{ $supplier->balance }}"
-                                                    data-balance="{{ $supplier->balance }}"
+                                                    data-phone="{{ $supplier->phone }}" data-email="{{ $supplier->email }}"
+                                                    data-phone="{{ $supplier->balance }}" data-balance="{{ $supplier->balance }}"
                                                     data-address="{{ $supplier->address }}" data-bs-toggle="modal"
                                                     data-bs-target="#editSupplierModal">
                                                     <i class="fa fa-edit text-white"></i>
@@ -94,16 +93,16 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="classModalLabel">Add New Supplier</h5>
+                        <h5 class="modal-title" id="classModalLabel">Add New Customer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="SupplierForm">
                             @csrf
                             <div class="form-group">
-                                <label for="supplier_name">Supplier Name</label>
-                                <input type="text" class="form-control" id="supplier_name" name="supplier_name"
-                                    placeholder="Supplier Name">
+                                <label for="customer">Customer Name</label>
+                                <input type="text" class="form-control" id="customer" name="customer"
+                                    placeholder="Customer Name">
                             </div>
 
                             <div class="form-group">
@@ -159,8 +158,8 @@
                             <input type="hidden" id="edit_supplier_id" name="supplier_id">
 
                             <div class="form-group">
-                                <label for="edit_supplier_name">Supplier Name</label>
-                                <input type="text" class="form-control" id="edit_supplier_name" name="supplier_name"
+                                <label for="edit_supplier_name">Customer Name</label>
+                                <input type="text" class="form-control" id="edit_supplier_name" name="customer"
                                     placeholder="Supplier Name">
                             </div>
 
@@ -208,60 +207,58 @@
 
         {{-- Ajax --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#searchBtn').on('click', function() {
+                    let phone = $('#searchPhone').val().trim();
 
-<script>
-    $(document).ready(function() {
-        $('#searchBtn').on('click', function() {
-            let phone = $('#searchPhone').val().trim();
+                    $.ajax({
+                        url: "{{ route('admin.searchCustomer') }}",
+                        type: "GET",
+                        data: { phone: phone },
+                        success: function(response) {
+                            let tableBody = $('tbody');
+                            tableBody.empty(); // Clear previous results
 
-            $.ajax({
-                url: "{{ route('admin.searchSuppliers') }}",
-                type: "GET",
-                data: { phone: phone },
-                success: function(response) {
-                    let tableBody = $('tbody');
-                    tableBody.empty(); // Clear previous results
-
-                    if (response.length > 0) {
-                        $.each(response, function(index, supplier) {
-                            tableBody.append(`
-                                <tr>
-                                    <td>${supplier.id}</td>
-                                    <td>${supplier.supplier_name}</td>
-                                    <td>${supplier.contact_person}</td>
-                                    <td>${supplier.phone}</td>
-                                    <td>${supplier.email}</td>
-                                    <td>${supplier.address}</td>
-                                    <td>${supplier.balance}</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm editClass"
-                                            data-id="${supplier.id}"
-                                            data-supplier_name="${supplier.supplier_name}"
-                                            data-contact_person="${supplier.contact_person}"
-                                            data-phone="${supplier.phone}"
-                                            data-email="${supplier.email}"
-                                            data-balance="${supplier.balance}"
-                                            data-address="${supplier.address}"
-                                            data-bs-toggle="modal" data-bs-target="#editSupplierModal">
-                                            <i class="fa fa-edit text-white"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm deleteClass"
-                                            data-id="${supplier.id}">
-                                            <i class="fa fa-trash text-white"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `);
-                        });
-                    } else {
-                        tableBody.append(`<tr><td colspan="8" class="text-center">No results found</td></tr>`);
-                    }
-                }
+                            if (response.length > 0) {
+                                $.each(response, function(index, customer) {
+                                    tableBody.append(`
+                                        <tr>
+                                            <td>${customer.id}</td>
+                                            <td>${customer.customer}</td>
+                                            <td>${customer.contact_person}</td>
+                                            <td>${customer.phone}</td>
+                                            <td>${customer.email}</td>
+                                            <td>${customer.address}</td>
+                                            <td>${customer.balance}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm editClass"
+                                                    data-id="${customer.id}"
+                                                    data-supplier_name="${customer.customer}"
+                                                    data-contact_person="${customer.contact_person}"
+                                                    data-phone="${customer.phone}"
+                                                    data-email="${customer.email}"
+                                                    data-balance="${customer.balance}"
+                                                    data-address="${customer.address}"
+                                                    data-bs-toggle="modal" data-bs-target="#editSupplierModal">
+                                                    <i class="fa fa-edit text-white"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm deleteClass"
+                                                    data-id="${customer.id}">
+                                                    <i class="fa fa-trash text-white"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `);
+                                });
+                            } else {
+                                tableBody.append(`<tr><td colspan="8" class="text-center">No results found</td></tr>`);
+                            }
+                        }
+                    });
+                });
             });
-        });
-    });
-</script>
-
+        </script>
 
         <!-- Error Modal -->
         <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -285,7 +282,7 @@
                     e.preventDefault();
                     var formData = $(this).serialize();
                     $.ajax({
-                        url: "{{ route('admin.storesupplier') }}",
+                        url: "{{ route('admin.storecustomer') }}",
                         type: "POST",
                         data: formData,
                         success: function(response) {
@@ -379,7 +376,7 @@
             $(document).ready(function() {
                 $('.editClass').on('click', function() {
                     let id = $(this).data('id');
-                    let name = $(this).data('supplier_name');
+                    let name = $(this).data('customer');
                     let contact = $(this).data('contact_person');
                     let phone = $(this).data('phone');
                     let email = $(this).data('email');
@@ -406,7 +403,7 @@
                 let supplierid = $('#edit_supplier_id').val(); // Get class ID
                 let formData = {
                     _token: "{{ csrf_token() }}",
-                    supplier_name: $('#edit_supplier_name').val(),
+                    customer: $('#edit_supplier_name').val(),
                     contact_person: $('#edit_contact_person').val(), // Corrected key name
                     phone: $('#edit_phone').val(),
                     email: $('#edit_email').val(),
@@ -432,16 +429,12 @@
                             }).showToast();
 
                             // Update the table row dynamically
-                            $('#classRow_' + supplierid).find('td:nth-child(2)').text(response.data
-                                .supplier_name);
-                            $('#classRow_' + supplierid).find('td:nth-child(3)').text(response.data
-                                .contact_person);
+                            $('#classRow_' + supplierid).find('td:nth-child(2)').text(response.data.customer);
+                            $('#classRow_' + supplierid).find('td:nth-child(3)').text(response.data.contact_person);
                             $('#classRow_' + supplierid).find('td:nth-child(4)').text(response.data.phone);
                             $('#classRow_' + supplierid).find('td:nth-child(5)').text(response.data.email);
-                            $('#classRow_' + supplierid).find('td:nth-child(6)').text(response.data
-                            .address);
-                            $('#classRow_' + supplierid).find('td:nth-child(7)').text(response.data
-                            .balance);
+                            $('#classRow_' + supplierid).find('td:nth-child(6)').text(response.data.address);
+                            $('#classRow_' + supplierid).find('td:nth-child(7)').text(response.data.balance);
 
                             // Hide modal properly
                             $('#editSupplierModal').modal('hide');
