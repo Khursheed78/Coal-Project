@@ -6,15 +6,15 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Customer</h4>
+                        <h4 class="card-title">Driver</h4>
                         <!-- Button to Open Modal -->
                         @if (Auth::user()->role === 'admin')
                             <!-- Button to Open Modal -->
                             <div class="row">
                                 <div class="col-6">
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#SupplierModal">
-                                        Add New Customer
+                                        data-bs-target="#DriverModal">
+                                        Add New Driver
                                     </button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
@@ -32,41 +32,38 @@
                                 <thead style="border-bottom: 2px solid black;">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Customer Name</th>
-                                        <th>Contact Person</th>
+                                        <th>Driver Name</th>
+                                        <th>Vehicle Number</th>
                                         <th>Phone</th>
-                                        <th>Email</th>
-                                        <th>Address</th>
+                                        <th>No of Trips</th>
                                         <th>Balance</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($suppliers as $supplier)
-                                        <tr id="classRow_{{ $supplier->id }}">
-                                            <td>{{ $supplier->id }}</td>
-                                            <td>{{ $supplier->customer }}</td>
-                                            <td>{{ $supplier->contact_person }}</td>
-                                            <td>{{ $supplier->phone }}</td>
-                                            <td>{{ $supplier->email }}</td>
+                                    @foreach ($drivers as $driver)
+                                        <tr id="classRow_{{ $driver->id }}">
+                                            <td>{{ $driver->id }}</td>
+                                            <td>{{ $driver->name }}</td>
+                                            <td>{{ $driver->vehicle_number }}</td>
+                                            <td>{{ $driver->phone }}</td>
+                                            <td>{{ $driver->number_of_trips }}</td>
+                                            <td>{{ $driver->balance }}</td>
                                             <td>
-                                                <div style="max-width: 200px;word-wrap: break-word;  white-space: normal;">
-                                                    {{ $supplier->address }}
-                                                </div>
-                                            </td>
-                                            <td>{{ $supplier->balance }}</td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm editClass" data-id="{{ $supplier->id }}"
-                                                    data-customer="{{ $supplier->customer }}"
-                                                    data-contact_person="{{ $supplier->contact_person }}"
-                                                    data-phone="{{ $supplier->phone }}" data-email="{{ $supplier->email }}"
-                                                    data-phone="{{ $supplier->balance }}" data-balance="{{ $supplier->balance }}"
-                                                    data-address="{{ $supplier->address }}" data-bs-toggle="modal"
-                                                    data-bs-target="#editSupplierModal">
+                                                <button class="btn btn-primary btn-sm editDriver"
+                                                    data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
+                                                    data-vehicle_number="{{ $driver->vehicle_number }}"
+                                                    data-phone="{{ $driver->phone }}" data-phone="{{ $driver->phone }}"
+                                                    data-phone="{{ $driver->balance }}"
+                                                    data-balance="{{ $driver->balance }}"
+                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
+                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
+                                                    data-number="{{ $driver->number }}" data-bs-toggle="modal"
+                                                    data-bs-target="#editDriverModal">
                                                     <i class="fa fa-edit text-white"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm deleteClass"
-                                                    data-id="{{ $supplier->id }}">
+                                                <button class="btn btn-danger btn-sm deletedriver"
+                                                    data-id="{{ $driver->id }}">
                                                     <i class="fa fa-trash text-white"></i>
                                                 </button>
                                             </td>
@@ -77,7 +74,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center mt-3" style="gap: 10px;">
-                            {{ $suppliers->links('pagination::bootstrap-5') }}
+                            {{-- {{ $suppliers->links('pagination::bootstrap-5') }} --}}
                         </div>
                     </div>
                 </div>
@@ -89,26 +86,26 @@
             </div>
         @endif
         <!-- Save Modal -->
-        <div class="modal fade" id="SupplierModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+        <div class="modal fade" id="DriverModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="classModalLabel">Add New Customer</h5>
+                        <h5 class="modal-title" id="classModalLabel">Add New Driver</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="SupplierForm">
                             @csrf
                             <div class="form-group">
-                                <label for="customer">Customer Name</label>
-                                <input type="text" class="form-control" id="customer" name="customer"
-                                    placeholder="Customer Name">
+                                <label for="name">Driver Name</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    placeholder="Driver Name">
                             </div>
 
                             <div class="form-group">
-                                <label for="class_code">Contact Person</label>
-                                <input type="text" class="form-control" id="contact_person" name="contact_person"
-                                    placeholder="Conatact Person">
+                                <label for="vehicle_number">Vehicle Number</label>
+                                <input type="text" class="form-control" id="vehicle_number" name="vehicle_number"
+                                    placeholder="Vehicle Number">
                             </div>
 
                             <div class="form-group">
@@ -118,15 +115,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="Email">
+                                <label for="number_of_trips">Number of Trips</label>
+                                <input type="number" class="form-control" id="number_of_trips" name="number_of_trips"
+                                    placeholder="Number of Trips">
                             </div>
-                            <div class="form-group">
-                                <label for="address">Address</label>
-                                <input type="text" class="form-control" id="address" name="address"
-                                    placeholder="Address">
-                            </div>
+
                             <div class="form-group">
                                 <label for="balance">Balance</label>
                                 <input type="number" class="form-control" id="balance" name="balance"
@@ -142,31 +135,32 @@
                 </div>
             </div>
         </div>
-        <!-- Edit Class Modal -->
-        <!-- Edit Supplier Modal -->
-        <div class="modal fade" id="editSupplierModal" tabindex="-1" aria-labelledby="editSupplierModalLabel"
+
+        <!-- Edit Driver Modal -->
+        <!-- Edit Driver Modal -->
+        <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="DriverModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editSupplierModalLabel">Edit Supplier</h5>
+                        <h5 class="modal-title" id="DriverModalLabel">Edit Driver</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editSupplierForm">
+                        <form id="editDriverForm">
                             @csrf
-                            <input type="hidden" id="edit_supplier_id" name="supplier_id">
+                            <input type="hidden" id="edit_driver_id" name="driver_id">
 
                             <div class="form-group">
-                                <label for="edit_customer_name">Customer Name</label>
-                                <input type="text" class="form-control" id="edit_customer_name" name="customer"
-                                    placeholder="Supplier Name">
+                                <label for="edit_name">Driver Name</label>
+                                <input type="text" class="form-control" id="edit_name" name="name"
+                                    placeholder="Driver Name">
                             </div>
 
                             <div class="form-group">
-                                <label for="edit_contact_person">Contact Person</label>
-                                <input type="text" class="form-control" id="edit_contact_person"
-                                    name="contact_person" placeholder="Contact Person">
+                                <label for="edit_vehicle_number">Vehicle Number</label>
+                                <input type="text" class="form-control" id="edit_vehicle_number"
+                                    name="vehicle_number" placeholder="Vehicle Number">
                             </div>
 
                             <div class="form-group">
@@ -176,16 +170,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="edit_email">Email</label>
-                                <input type="email" class="form-control" id="edit_email" name="email"
-                                    placeholder="Email">
+                                <label for="edit_number_of_trips">Number of Trips</label>
+                                <input type="number" class="form-control" id="edit_number_of_trips"
+                                    name="number_of_trips" placeholder="Number of Trips">
                             </div>
 
-                            <div class="form-group">
-                                <label for="edit_address">Address</label>
-                                <input type="text" class="form-control" id="edit_address" name="address"
-                                    placeholder="Address">
-                            </div>
                             <div class="form-group">
                                 <label for="edit_balance">Balance</label>
                                 <input type="number" class="form-control" id="edit_balance" name="balance"
@@ -202,9 +191,6 @@
             </div>
         </div>
 
-
-
-
         {{-- Ajax --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
@@ -215,7 +201,9 @@
                     $.ajax({
                         url: "{{ route('admin.searchCustomer') }}",
                         type: "GET",
-                        data: { phone: phone },
+                        data: {
+                            phone: phone
+                        },
                         success: function(response) {
                             let tableBody = $('tbody');
                             tableBody.empty(); // Clear previous results
@@ -232,7 +220,7 @@
                                             <td>${customer.address}</td>
                                             <td>${customer.balance}</td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm editClass"
+                                                <button class="btn btn-primary btn-sm editDriver"
                                                     data-id="${customer.id}"
                                                     data-supplier_name="${customer.customer}"
                                                     data-contact_person="${customer.contact_person}"
@@ -240,10 +228,10 @@
                                                     data-email="${customer.email}"
                                                     data-balance="${customer.balance}"
                                                     data-address="${customer.address}"
-                                                    data-bs-toggle="modal" data-bs-target="#editSupplierModal">
+                                                    data-bs-toggle="modal" data-bs-target="#editDriverModal">
                                                     <i class="fa fa-edit text-white"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm deleteClass"
+                                                <button class="btn btn-danger btn-sm deletedriver"
                                                     data-id="${customer.id}">
                                                     <i class="fa fa-trash text-white"></i>
                                                 </button>
@@ -252,7 +240,9 @@
                                     `);
                                 });
                             } else {
-                                tableBody.append(`<tr><td colspan="8" class="text-center">No results found</td></tr>`);
+                                tableBody.append(
+                                    `<tr><td colspan="8" class="text-center">No results found</td></tr>`
+                                    );
                             }
                         }
                     });
@@ -282,7 +272,7 @@
                     e.preventDefault();
                     var formData = $(this).serialize();
                     $.ajax({
-                        url: "{{ route('admin.storecustomer') }}",
+                        url: "{{ route('driver.driverStore') }}",
                         type: "POST",
                         data: formData,
                         success: function(response) {
@@ -290,12 +280,12 @@
                                 toast: true,
                                 position: "top",
                                 icon: "success",
-                                title: "Supplier added successfully!",
+                                title: "Driver added successfully!",
                                 showConfirmButton: false,
                                 timer: 3000
                             });
 
-                            $('#SupplierModal').modal('hide');
+                            $('#DriverModal').modal('hide');
                             $('#SupplierForm')[0].reset();
 
                             setTimeout(function() {
@@ -324,7 +314,7 @@
             });
 
             // Handle Delete Button Click
-            $(document).on('click', '.deleteClass', function() {
+            $(document).on('click', '.deletedriver', function() {
                 let id = $(this).data('id'); // Get class ID
 
                 Swal.fire({
@@ -338,7 +328,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ route('admin.deletecustomer', ':id') }}".replace(':id', id),
+                            url: "{{ route('driver.deleteDriver', ':id') }}".replace(':id', id),
                             type: "DELETE",
                             data: {
                                 _token: "{{ csrf_token() }}"
@@ -346,7 +336,7 @@
                             success: function(response) {
                                 Swal.fire({
                                     title: "Deleted!",
-                                    text: "customer deleted successfully.",
+                                    text: "Driver deleted successfully.",
                                     icon: "success",
                                     timer: 2000,
                                     showConfirmButton: false
@@ -374,53 +364,49 @@
 
             // Handle Edit Button Click
             $(document).ready(function() {
-                $('.editClass').on('click', function() {
+                $('.editDriver').on('click', function() {
                     let id = $(this).data('id');
-                    let customer = $(this).data('customer');
-                    let contact = $(this).data('contact_person');
+                    let name = $(this).data('name');
+                    let vehicle_number = $(this).data('vehicle_number');
                     let phone = $(this).data('phone');
-                    let email = $(this).data('email');
                     let balance = $(this).data('balance');
-                    let address = $(this).data('address');
+                    let number_of_trips = $(this).data('number_of_trips');
 
 
                     // Fill the modal fields
-                    $('#edit_supplier_id').val(id);
-                    $('#edit_customer_name').val(customer);
-                    $('#edit_contact_person').val(contact);
+                    $('#edit_driver_id').val(id);
+                    $('#edit_name').val(name);
+                    $('#edit_vehicle_number').val(vehicle_number);
                     $('#edit_phone').val(phone);
-                    $('#edit_email').val(email);
+                    $('#edit_number_of_trips').val(number_of_trips);
                     $('#edit_balance').val(balance);
-                    $('#edit_address').val(address);
+
 
                 });
             });
 
             // Handle Update Form Submission
-            $('#editSupplierForm').submit(function(e) {
+            $('#editDriverForm').submit(function(e) {
                 e.preventDefault(); // Prevent default form submission
 
-                let supplierid = $('#edit_supplier_id').val(); // Get class ID
+                let driverid = $('#edit_driver_id').val(); // Get class ID
                 let formData = {
                     _token: "{{ csrf_token() }}",
-                    customer: $('#edit_customer_name').val(),
-                    contact_person: $('#edit_contact_person').val(), // Corrected key name
+                    name: $('#edit_name').val(),
+                    vehicle_number: $('#edit_vehicle_number').val(), // Corrected key name
                     phone: $('#edit_phone').val(),
-                    email: $('#edit_email').val(),
                     balance: $('#edit_balance').val(),
-                    address: $('#edit_address').val(),
+                    number_of_trips: $('#edit_number_of_trips').val(),
                 };
-
-
                 $.ajax({
-                    url: "{{ route('admin.updateCustomer', ':id') }}".replace(':id',
-                        supplierid), // Fixed route name
+                    url: "{{ route('driver.UpdateDriver', ':id') }}".replace(':id',
+                    driverid), // Fixed route name
                     type: "PUT",
                     data: formData,
                     success: function(response) {
                         if (response.success) {
                             Toastify({
-                                text: "Supplier updated successfully!",
+                                text: "Driver updated successfully!",
                                 backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
                                 className: "info",
                                 gravity: "top",
@@ -429,20 +415,20 @@
                             }).showToast();
 
                             // Update the table row dynamically
-                            $('#classRow_' + supplierid).find('td:nth-child(2)').text(response.data.customer);
-                            $('#classRow_' + supplierid).find('td:nth-child(3)').text(response.data.contact_person);
-                            $('#classRow_' + supplierid).find('td:nth-child(4)').text(response.data.phone);
-                            $('#classRow_' + supplierid).find('td:nth-child(5)').text(response.data.email);
-                            $('#classRow_' + supplierid).find('td:nth-child(6)').text(response.data.address);
-                            $('#classRow_' + supplierid).find('td:nth-child(7)').text(response.data.balance);
+                            $('#classRow_' + driverid).find('td:nth-child(2)').text(response.data.name);
+                            $('#classRow_' + driverid).find('td:nth-child(3)').text(response.data.vehicle_number);
+                            $('#classRow_' + driverid).find('td:nth-child(4)').text(response.data.phone);
+                            $('#classRow_' + driverid).find('td:nth-child(7)').text(response.data.balance);
+                            $('#classRow_' + driverid).find('td:nth-child(6)').text(response.data.number_of_trips);
+
 
                             // Hide modal properly
-                            $('#editSupplierModal').modal('hide');
+                            $('#editDriverModal').modal('hide');
                             $('.modal-backdrop').remove();
                             $('body').removeClass('modal-open');
 
                             // Refresh page after 1.5 seconds
-                            // setTimeout(() => location.reload(), 1500);
+                            setTimeout(() => location.reload(), 1500);
                         } else {
                             Toastify({
                                 text: "Error updating supplier.",

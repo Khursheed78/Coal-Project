@@ -16,7 +16,8 @@ class AdminController extends Controller
 
     public function dashboard(){
         $suppliers = Supplier::all();
-        return view('admin.dashboard',compact('suppliers'));
+        $customers = Customer::all();
+        return view('admin.dashboard',compact('suppliers','customers'));
     }
 
     // public function managerdashboard(){
@@ -73,6 +74,7 @@ class AdminController extends Controller
 {
     $supplier = Supplier::find($id);
     if ($supplier) {
+
         $supplier->delete();
         return response()->json(['success' => 'Supplier deleted successfully']);
     } else {
@@ -145,6 +147,35 @@ public function searchCustomer(Request $request)
     $customer = Customer::where('phone', 'LIKE', "%$query%")->get();
 
     return response()->json($customer);
+}
+public function DeleteCustomer($id)
+{
+    $customer = Customer::find($id);
+    if ($customer) {
+        $customer->delete();
+        return response()->json(['success' => 'Customer deleted successfully']);
+    } else {
+        return response()->json(['error' => 'Customer not found'], 404);
+    }
+}
+public function updateCustomer(Request $request, $id) {
+
+
+    $supplier = Customer::findOrFail($id);
+    $supplier->update([
+        'customer' => $request->customer,
+        'contact_person' => $request->contact_person,
+        'phone' => $request->phone,
+        'email' => $request->email,
+        'balance' => $request->balance,
+        'address' => $request->address,
+
+    ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Customer updated successfully!',
+        'data' => $supplier
+    ]);
 }
 }
 

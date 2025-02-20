@@ -137,6 +137,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{route('driver.create')}}">
+                                <i class="fa fa-truck menu-icon"></i>
+                                <span class="menu-title">Driver Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('invoices.create')}}">
+                                <i class="fa fa-warehouse menu-icon"></i>
+                                <span class="menu-title">Invoice Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <i class="fa fa-warehouse menu-icon"></i>
                                 <span class="menu-title">Stock Management</span>
