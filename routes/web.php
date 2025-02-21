@@ -9,7 +9,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Models\Driver;
 
 Route::get('/loginView', [AuthController::class, 'index'])->name('loginView');
-Route::post('/loginV', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/registrationView', [AuthController::class, 'registrationView'])->name('registrationView');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
