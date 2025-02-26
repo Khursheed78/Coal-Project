@@ -6,15 +6,15 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Driver</h4>
+                        <h4 class="card-title">Expense</h4>
                         <!-- Button to Open Modal -->
                         @if (Auth::user()->role === 'admin')
                             <!-- Button to Open Modal -->
                             <div class="row">
                                 <div class="col-6">
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#DriverModal">
-                                        Add New Driver
+                                        data-bs-target="#ExpenseModal">
+                                        Add New Expense
                                     </button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
@@ -32,60 +32,42 @@
                                 <thead style="border-bottom: 2px solid black;">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Driver Name</th>
-                                        <th>Vehicle Number</th>
-                                        <th>Phone</th>
-                                        <th>No of Trips</th>
-                                        <th>Balance</th>
-                                        <th>Payment Status</th>
+                                        <th>Title</th>
+                                        <th>Amount</th>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th>Mode of Expense</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($drivers as $driver)
-                                        <tr id="classRow_{{ $driver->id }}">
-                                            <td>{{ $driver->id }}</td>
-                                            <td>{{ $driver->name }}</td>
-                                            <td>{{ $driver->vehicle_number }}</td>
-                                            <td>{{ $driver->phone }}</td>
-                                            <td>{{ $driver->number_of_trips }}</td>
-                                            <td>{{ $driver->balance }}</td>
+                                    @foreach ($expenses as $expense)
+                                        <tr id="expenseRow_{{ $expense->id }}">
+                                            <td>{{ $expense->id }}</td>
+                                            <td>{{ $expense->title }}</td>
+                                            <td>{{ $expense->amount }}</td>
+                                            <td>{{ $expense->description }}</td>
+                                            <td>{{ $expense->expense_date }}</td>
+                                            <td>{{ $expense->supplier->supplier_name }}</td>
                                             <!-- Payment Button -->
                                             <!-- Payment Button -->
-                                            <td>
-                                                @if ($driver->balance == 0)
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-check-circle"></i> Paid
-                                                    </span>
-                                                @else
-                                                    <button type="button" class="btn btn-success payment-btn"
-                                                        data-bs-toggle="modal" data-bs-target="#PaymentModal"
-                                                        data-driver-id="{{ $driver->id }}"
-                                                        data-driver-name="{{ $driver->name }}"
-                                                        data-balance="{{ $driver->balance }}">
-                                                        Pay Now
-                                                    </button>
-                                                @endif
-                                            </td>
-
-
                                             <td>
                                                 <button class="btn btn-primary btn-sm editDriver"
-                                                    data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
-                                                    data-vehicle_number="{{ $driver->vehicle_number }}"
-                                                    data-phone="{{ $driver->phone }}" data-phone="{{ $driver->phone }}"
-                                                    data-phone="{{ $driver->balance }}"
-                                                    data-balance="{{ $driver->balance }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number="{{ $driver->number }}" data-bs-toggle="modal"
+                                                    data-id="{{ $expense->id }}" data-name="{{ $expense->name }}"
+                                                    data-vehicle_number="{{ $expense->vehicle_number }}"
+                                                    data-phone="{{ $expense->phone }}" data-phone="{{ $expense->phone }}"
+                                                    data-phone="{{ $expense->balance }}"
+                                                    data-balance="{{ $expense->balance }}"
+                                                    data-number_of_trips="{{ $expense->number_of_trips }}"
+                                                    data-number_of_trips="{{ $expense->number_of_trips }}"
+                                                    data-number="{{ $expense->number }}" data-bs-toggle="modal"
                                                     data-bs-target="#editDriverModal">
                                                     <i class="fa fa-edit text-white"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm deletedriver"
-                                                    data-id="{{ $driver->id }}">
+                                                <button class="btn btn-danger btn-sm deletedriver" data-id="{{ $expense->id }}">
                                                     <i class="fa fa-trash text-white"></i>
                                                 </button>
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -106,44 +88,50 @@
             </div>
         @endif
         <!-- Save Modal -->
-        <div class="modal fade" id="DriverModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+        <div class="modal fade" id="ExpenseModal" tabindex="-1" aria-labelledby="expenseModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="classModalLabel">Add New Driver</h5>
+                        <h5 class="modal-title" id="expenseModalLabel">Add New Expense</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="SupplierForm">
+                        <form id="ExpenseForm">
                             @csrf
                             <div class="form-group">
-                                <label for="name">Driver Name</label>
-                                <input type="text" class="form-control" id="name" name="name"
-                                    placeholder="Driver Name">
+                                <label for="title">Expense Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                    placeholder="Enter Expense Title" value="{{ old('title') }}">
                             </div>
 
                             <div class="form-group">
-                                <label for="vehicle_number">Vehicle Number</label>
-                                <input type="text" class="form-control" id="vehicle_number" name="vehicle_number"
-                                    placeholder="Vehicle Number">
+                                <label for="amount">Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="amount" name="amount"
+                                    placeholder="Enter Amount" value="{{ old('amount') }}">
                             </div>
 
                             <div class="form-group">
-                                <label for="phone">Phone</label>
-                                <input type="number" class="form-control" id="phone" name="phone"
-                                    placeholder="Phone">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" name="description" placeholder="Enter Description (Optional)">{{ old('description') }}</textarea>
                             </div>
 
                             <div class="form-group">
-                                <label for="number_of_trips">Number of Trips</label>
-                                <input type="number" class="form-control" id="number_of_trips" name="number_of_trips"
-                                    placeholder="Number of Trips">
+                                <label for="expense_date">Expense Date</label>
+                                <input type="date" class="form-control" id="expense_date" name="expense_date"
+                                    value="{{ old('expense_date') }}">
                             </div>
 
                             <div class="form-group">
-                                <label for="balance">Balance</label>
-                                <input type="number" class="form-control" id="balance" name="balance"
-                                    placeholder="Balance">
+                                <label for="supplier_id">Supplier</label>
+                                <select class="form-control" id="supplier_id" name="supplier_id">
+                                    <option value="">Select Supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}"
+                                            {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                            {{ $supplier->supplier_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="modal-footer">
@@ -151,12 +139,14 @@
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Modal -->
+
+        {{-- <!-- Payment Modal -->
         <div class="modal fade" id="PaymentModal" tabindex="-1" aria-labelledby="PaymentModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -179,10 +169,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
-        <!-- Edit Driver Modal -->
-        <!-- Edit Driver Modal -->
+
+        {{-- <!-- Edit Driver Modal -->
         <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="DriverModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -234,11 +224,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         {{-- Ajax --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
+        {{-- <script>
             $(document).ready(function() {
                 $(".payment-btn").click(function() {
                     let driverName = $(this).attr("data-driver-name");
@@ -252,46 +242,47 @@
                     $("#paymentAmount").val(balance); // Show balance in input field
                 });
             });
-        </script>
-       <script>
-        $(document).ready(function () {
-            $(".payment-btn").click(function () {
-                let driverName = $(this).attr("data-driver-name");
-                let balance = $(this).attr("data-balance");
-                let driverId = $(this).attr("data-driver-id"); // Add driver ID in button
+        </script> --}}
+        <script>
+            $(document).ready(function() {
+                $(".payment-btn").click(function() {
+                    let driverName = $(this).attr("data-driver-name");
+                    let balance = $(this).attr("data-balance");
+                    let driverId = $(this).attr("data-driver-id"); // Add driver ID in button
 
-                $("#modalDriverName").text(driverName);
-                $("#paymentAmount").val(balance);
-                $("#submitPayment").data("driver-id", driverId); // Store driver ID for later
-            });
+                    $("#modalDriverName").text(driverName);
+                    $("#paymentAmount").val(balance);
+                    $("#submitPayment").data("driver-id", driverId); // Store driver ID for later
+                });
 
-            $("#submitPayment").click(function () {
-                let driverId = $(this).data("driver-id");
-                let paymentAmount = $("#paymentAmount").val();
+                $("#submitPayment").click(function() {
+                    let driverId = $(this).data("driver-id");
+                    let paymentAmount = $("#paymentAmount").val();
 
-                $.ajax({
-                    url: "{{ route('update.balance') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        driver_id: driverId,
-                        payment_amount: paymentAmount
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            alert("Payment successful! New balance: $" + response.new_balance + " | Trips: " + response.new_trips);
-                            location.reload(); // Refresh to update balance & trips
-                        } else {
-                            alert("Error updating balance.");
+                    $.ajax({
+                        url: "{{ route('update.balance') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            driver_id: driverId,
+                            payment_amount: paymentAmount
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert("Payment successful! New balance: $" + response.new_balance +
+                                    " | Trips: " + response.new_trips);
+                                location.reload(); // Refresh to update balance & trips
+                            } else {
+                                alert("Error updating balance.");
+                            }
                         }
-                    }
+                    });
                 });
             });
-        });
         </script>
 
 
-        <script>
+        {{-- <script>
             $(document).ready(function() {
                 $('.payment-btn').on('click', function() {
                     var driverName = $(this).data('driver-name');
@@ -301,7 +292,7 @@
                     $('#modalBalance').text(balance);
                 });
             });
-        </script>
+        </script> --}}
 
         <script>
             $(document).ready(function() {
@@ -378,11 +369,13 @@
         <script>
             // Save Data
             $(document).ready(function() {
-                $('#SupplierForm').submit(function(e) {
+                $('#ExpenseForm').submit(function(e) {
                     e.preventDefault();
+
                     var formData = $(this).serialize();
+
                     $.ajax({
-                        url: "{{ route('driver.driverStore') }}",
+                        url: "{{ route('expense.store') }}", // Update with the correct route for storing expenses
                         type: "POST",
                         data: formData,
                         success: function(response) {
@@ -390,16 +383,17 @@
                                 toast: true,
                                 position: "top",
                                 icon: "success",
-                                title: "Driver added successfully!",
+                                title: "Expense added successfully!",
                                 showConfirmButton: false,
                                 timer: 3000
                             });
 
-                            $('#DriverModal').modal('hide');
-                            $('#SupplierForm')[0].reset();
+                            $('#ExpenseModal').modal(
+                            'hide'); // Hide modal after successful submission
+                            $('#ExpenseForm')[0].reset(); // Reset the form
 
                             setTimeout(function() {
-                                location.reload();
+                                location.reload(); // Refresh the page to update the list
                             }, 1000);
                         },
                         error: function(xhr) {
@@ -423,54 +417,59 @@
                 });
             });
 
-            // Handle Delete Button Click
-            $(document).on('click', '.deletedriver', function() {
-                let id = $(this).data('id'); // Get class ID
 
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This class will be permanently deleted!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('driver.deleteDriver', ':id') }}".replace(':id', id),
-                            type: "DELETE",
-                            data: {
-                                _token: "{{ csrf_token() }}"
-                            },
-                            success: function(response) {
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Driver deleted successfully.",
-                                    icon: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
 
-                                // Remove the row smoothly without refresh
-                                $("#classRow_" + id).fadeOut(500, function() {
-                                    $(this).remove();
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to delete class. Try again.",
-                                    icon: "error",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                                console.log(xhr.responseText); // Debugging
-                            }
-                        });
-                    }
-                });
+           // Handle Delete Button Click
+$(document).on('click', '.deletedriver', function() {
+    let id = $(this).data('id'); // Get expense ID
+    let row = $(this).closest('tr'); // Find the closest table row
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This expense will be permanently deleted!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('expense.delete', ':id') }}".replace(':id', id),
+                type: "DELETE",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Expense deleted successfully.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    // Remove row smoothly
+                    row.fadeOut(500, function() {
+                        $(this).remove();
+                    });
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Failed to delete Expense. Try again.",
+                        icon: "error",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    console.log(xhr.responseText); // Debugging
+                }
             });
+        }
+    });
+});
+
+
 
             // Handle Edit Button Click
             $(document).ready(function() {

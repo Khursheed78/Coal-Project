@@ -6,9 +6,9 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Driver</h4>
+                        <h4 class="card-title">Stock Invoice</h4>
                         <!-- Button to Open Modal -->
-                        @if (Auth::user()->role === 'admin')
+                        {{-- @if (Auth::user()->role === 'admin')
                             <!-- Button to Open Modal -->
                             <div class="row">
                                 <div class="col-6">
@@ -25,65 +25,47 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
 
                         <div class="table-responsive">
                             <table id="classTable" class="table table-bordered mt-4 table-striped">
                                 <thead style="border-bottom: 2px solid black;">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Driver Name</th>
-                                        <th>Vehicle Number</th>
-                                        <th>Phone</th>
-                                        <th>No of Trips</th>
+                                        <th>Supplier Name</th>
+                                        <th>Supplier Phone Number</th>
                                         <th>Balance</th>
-                                        <th>Payment Status</th>
+                                        <th>Driver Name</th>
+                                        <th>No# of Trips</th>
+                                        <th>Balance</th>
+                                        <th>Quantity</th>
+                                        <th>Price/Ton</th>
+                                        <th>Total Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($drivers as $driver)
-                                        <tr id="classRow_{{ $driver->id }}">
-                                            <td>{{ $driver->id }}</td>
-                                            <td>{{ $driver->name }}</td>
-                                            <td>{{ $driver->vehicle_number }}</td>
-                                            <td>{{ $driver->phone }}</td>
-                                            <td>{{ $driver->number_of_trips }}</td>
-                                            <td>{{ $driver->balance }}</td>
-                                            <!-- Payment Button -->
-                                            <!-- Payment Button -->
-                                            <td>
-                                                @if ($driver->balance == 0)
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-check-circle"></i> Paid
-                                                    </span>
-                                                @else
-                                                    <button type="button" class="btn btn-success payment-btn"
-                                                        data-bs-toggle="modal" data-bs-target="#PaymentModal"
-                                                        data-driver-id="{{ $driver->id }}"
-                                                        data-driver-name="{{ $driver->name }}"
-                                                        data-balance="{{ $driver->balance }}">
-                                                        Pay Now
-                                                    </button>
-                                                @endif
-                                            </td>
+                                    @foreach ($stocks as $stock)
+                                        <tr id="classRow_{{ $stock->id }}">
+                                            <td>{{ $stock->id }}</td>
+                                            <td>{{ $stock->supplier->supplier_name }}</td>
+                                            <td>{{ $stock->supplier->phone }}</td>
+                                            <td>{{ $stock->supplier->balance }}</td>
+                                            <td>{{ $stock->driver->name }}</td>
+                                            <td>{{ $stock->driver->number_of_trips }}</td>
+                                            <td>{{ $stock->driver->balance }}</td>
+                                            <td>{{ $stock->quantity }}</td>
+                                            <td>{{ $stock->price_per_ton }}</td>
+                                            <td>{{ $stock->total_price }}</td>
+
 
 
                                             <td>
                                                 <button class="btn btn-primary btn-sm editDriver"
-                                                    data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
-                                                    data-vehicle_number="{{ $driver->vehicle_number }}"
-                                                    data-phone="{{ $driver->phone }}" data-phone="{{ $driver->phone }}"
-                                                    data-phone="{{ $driver->balance }}"
-                                                    data-balance="{{ $driver->balance }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number="{{ $driver->number }}" data-bs-toggle="modal"
-                                                    data-bs-target="#editDriverModal">
-                                                    <i class="fa fa-edit text-white"></i>
+                                                >    <i class="fa fa-edit text-white"></i>
                                                 </button>
                                                 <button class="btn btn-danger btn-sm deletedriver"
-                                                    data-id="{{ $driver->id }}">
+                                                    data-id="{{ $stock->id }}">
                                                     <i class="fa fa-trash text-white"></i>
                                                 </button>
                                             </td>
@@ -105,7 +87,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <!-- Save Modal -->
+        {{-- <!-- Save Modal -->
         <div class="modal fade" id="DriverModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -237,7 +219,7 @@
         </div>
 
         {{-- Ajax --}}
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
                 $(".payment-btn").click(function() {
@@ -288,9 +270,9 @@
                 });
             });
         });
-        </script>
+        </script> --}}
 
-
+{{--
         <script>
             $(document).ready(function() {
                 $('.payment-btn').on('click', function() {
@@ -358,10 +340,10 @@
                     });
                 });
             });
-        </script>
+        </script> --}}
 
         <!-- Error Modal -->
-        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
@@ -373,9 +355,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
-        <script>
+        {{-- <script>
             // Save Data
             $(document).ready(function() {
                 $('#SupplierForm').submit(function(e) {
@@ -566,5 +548,5 @@
                 });
 
             });
-        </script>
+        </script> --}}
     @endsection

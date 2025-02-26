@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Customer;
-use App\Models\Supplier;
-use App\Models\Subjects;
+use App\Models\Stock;
 use App\Models\User;
+use App\Models\Driver;
 use App\Models\Parents;
+use App\Models\Customer;
+use App\Models\Subjects;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Container\Attributes\Auth;
 
@@ -17,7 +19,10 @@ class AdminController extends Controller
     public function dashboard(){
         $suppliers = Supplier::all();
         $customers = Customer::all();
-        return view('admin.dashboard',compact('suppliers','customers'));
+        $driver = Driver::all();
+        $totalStock = Stock::sum('quantity');
+
+        return view('admin.dashboard',compact('suppliers','customers','driver','totalStock'));
     }
 
     // public function managerdashboard(){

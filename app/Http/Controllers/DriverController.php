@@ -85,4 +85,49 @@ class DriverController extends Controller
             return response()->json(['error' => 'Driver not found'], 404);
         }
     }
+    public function updateBalance(Request $request)
+{
+    $driver = Driver::find($request->driver_id);
+
+    if (!$driver) {
+        return response()->json(['error' => 'Driver not found'], 404);
+    }
+
+    // Deduct payment amount from balance
+    $driver->balance -= $request->payment_amount;
+    if ($driver->balance <= 0) {
+        $driver->balance = 0;  // Ensure balance is zero
+        $driver->number_of_trips = 0;     // Reset trips to zero
+    }
+
+    $driver->save();
+
+    return response()->json([
+        'success' => true,
+        'new_balance' => $driver->balance,
+        'new_trips' => $driver->number_of_trips
+    ]);
+}
+
+//     public function updateBalance(Request $request)
+// {
+//     $driver = Driver::find($request->driver_id);
+
+//     if (!$driver) {
+//         return response()->json(['error' => 'Driver not found'], 404);
+//     }
+
+//     // Deduct payment amount from balance
+//     $driver->balance -= $request->payment_amount;
+//     if ($driver->balance < 0) {
+//         $driver->balance = 0; // Ensure balance never goes negative
+//     }
+
+//     $driver->save();
+
+//     return response()->json([
+//         'success' => true,
+//         'new_balance' => $driver->balance
+//     ]);
+// }
 }
