@@ -35,9 +35,9 @@
                                         <th>Driver Name</th>
                                         <th>Vehicle Number</th>
                                         <th>Phone</th>
-                                        <th>No of Trips</th>
-                                        <th>Balance</th>
-                                        <th>Payment Status</th>
+                                        {{-- <th>No of Trips</th> --}}
+                                        {{-- <th>Balance</th>
+                                        <th>Payment Status</th> --}}
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -48,26 +48,6 @@
                                             <td>{{ $driver->name }}</td>
                                             <td>{{ $driver->vehicle_number }}</td>
                                             <td>{{ $driver->phone }}</td>
-                                            <td>{{ $driver->number_of_trips }}</td>
-                                            <td>{{ $driver->balance }}</td>
-                                            <!-- Payment Button -->
-                                            <!-- Payment Button -->
-                                            <td>
-                                                @if ($driver->balance == 0)
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-check-circle"></i> Paid
-                                                    </span>
-                                                @else
-                                                    <button type="button" class="btn btn-success payment-btn"
-                                                        data-bs-toggle="modal" data-bs-target="#PaymentModal"
-                                                        data-driver-id="{{ $driver->id }}"
-                                                        data-driver-name="{{ $driver->name }}"
-                                                        data-balance="{{ $driver->balance }}">
-                                                        Pay Now
-                                                    </button>
-                                                @endif
-                                            </td>
-
 
                                             <td>
                                                 <button class="btn btn-primary btn-sm editDriver"
@@ -134,17 +114,17 @@
                                     placeholder="Phone">
                             </div>
 
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label for="number_of_trips">Number of Trips</label>
                                 <input type="number" class="form-control" id="number_of_trips" name="number_of_trips"
                                     placeholder="Number of Trips">
-                            </div>
+                            </div> --}}
 
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label for="balance">Balance</label>
                                 <input type="number" class="form-control" id="balance" name="balance"
                                     placeholder="Balance">
-                            </div>
+                            </div> --}}
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -157,8 +137,7 @@
         </div>
 
         <!-- Payment Modal -->
-        <div class="modal fade" id="PaymentModal" tabindex="-1" aria-labelledby="PaymentModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="PaymentModal" tabindex="-1" aria-labelledby="PaymentModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -181,7 +160,20 @@
             </div>
         </div>
 
-        <!-- Edit Driver Modal -->
+        <!-- Error Modal -->
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="errorMessages" class="text-danger"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Edit Driver Modal -->
         <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="DriverModalLabel"
             aria-hidden="true">
@@ -213,19 +205,6 @@
                                 <input type="number" class="form-control" id="edit_phone" name="phone"
                                     placeholder="Phone">
                             </div>
-
-                            <div class="form-group">
-                                <label for="edit_number_of_trips">Number of Trips</label>
-                                <input type="number" class="form-control" id="edit_number_of_trips"
-                                    name="number_of_trips" placeholder="Number of Trips">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="edit_balance">Balance</label>
-                                <input type="number" class="form-control" id="edit_balance" name="balance"
-                                    placeholder="Balance">
-                            </div>
-
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Update</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -239,6 +218,10 @@
         {{-- Ajax --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            /**
+             * ✅ SHOW PAYMENT RECORD IN MODAL
+             * - Populates the modal fields when a payment button is clicked.
+             */
             $(document).ready(function() {
                 $(".payment-btn").click(function() {
                     let driverName = $(this).attr("data-driver-name");
@@ -251,48 +234,51 @@
                     $("#modalDriverName").text(driverName);
                     $("#paymentAmount").val(balance); // Show balance in input field
                 });
-            });
-        </script>
-       <script>
-        $(document).ready(function () {
-            $(".payment-btn").click(function () {
-                let driverName = $(this).attr("data-driver-name");
-                let balance = $(this).attr("data-balance");
-                let driverId = $(this).attr("data-driver-id"); // Add driver ID in button
 
-                $("#modalDriverName").text(driverName);
-                $("#paymentAmount").val(balance);
-                $("#submitPayment").data("driver-id", driverId); // Store driver ID for later
-            });
+                /**
+                 * ✅ UPDATE PAYMENT VIA AJAX
+                 * - Sends a request to update the payment balance.
+                 */
+                $(".payment-btn").click(function() {
+                    let driverName = $(this).attr("data-driver-name");
+                    let balance = $(this).attr("data-balance");
+                    let driverId = $(this).attr("data-driver-id"); // Add driver ID in button
 
-            $("#submitPayment").click(function () {
-                let driverId = $(this).data("driver-id");
-                let paymentAmount = $("#paymentAmount").val();
-
-                $.ajax({
-                    url: "{{ route('update.balance') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        driver_id: driverId,
-                        payment_amount: paymentAmount
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            alert("Payment successful! New balance: $" + response.new_balance + " | Trips: " + response.new_trips);
-                            location.reload(); // Refresh to update balance & trips
-                        } else {
-                            alert("Error updating balance.");
-                        }
-                    }
+                    $("#modalDriverName").text(driverName);
+                    $("#paymentAmount").val(balance);
+                    $("#submitPayment").data("driver-id", driverId); // Store driver ID for later
                 });
-            });
-        });
-        </script>
+
+                $("#submitPayment").click(function() {
+                    let driverId = $(this).data("driver-id");
+                    let paymentAmount = $("#paymentAmount").val();
+
+                    $.ajax({
+                        url: "{{ route('update.balance') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            driver_id: driverId,
+                            payment_amount: paymentAmount
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert("Payment successful! New balance: $" + response.new_balance +
+                                    " | Trips: " + response.new_trips);
+                                location.reload(); // Refresh to update balance & trips
+                            } else {
+                                alert("Error updating balance.");
+                            }
+                        }
+                    });
+                });
 
 
-        <script>
-            $(document).ready(function() {
+
+                /**
+                 * ✅ SEARCH CUSTOMER BY PHONE
+                 * - Searches for a customer and updates the table dynamically.
+                 */
                 $('.payment-btn').on('click', function() {
                     var driverName = $(this).data('driver-name');
                     var balance = $(this).data('balance');
@@ -300,11 +286,8 @@
                     $('#modalDriverName').text(driverName);
                     $('#modalBalance').text(balance);
                 });
-            });
-        </script>
 
-        <script>
-            $(document).ready(function() {
+
                 $('#searchBtn').on('click', function() {
                     let phone = $('#searchPhone').val().trim();
 
@@ -357,27 +340,13 @@
                         }
                     });
                 });
-            });
-        </script>
 
-        <!-- Error Modal -->
-        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <ul id="errorMessages" class="text-danger"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <script>
-            // Save Data
-            $(document).ready(function() {
+                /**
+                 * ✅ SAVE DRIVER RECORD
+                 * - Save a driver record via AJAX.
+                 */
+
                 $('#SupplierForm').submit(function(e) {
                     e.preventDefault();
                     var formData = $(this).serialize();
@@ -421,59 +390,60 @@
                         }
                     });
                 });
-            });
 
-            // Handle Delete Button Click
-            $(document).on('click', '.deletedriver', function() {
-                let id = $(this).data('id'); // Get class ID
+                /**
+                 * ✅ DELETE DRIVER RECORD
+                 * - Removes a driver record via AJAX.
+                 */
+                $(document).on("click", ".deletedriver", function() {
+                    let id = $(this).data("id"); // Get driver ID from the button
 
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This class will be permanently deleted!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('driver.deleteDriver', ':id') }}".replace(':id', id),
-                            type: "DELETE",
-                            data: {
-                                _token: "{{ csrf_token() }}"
-                            },
-                            success: function(response) {
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Driver deleted successfully.",
-                                    icon: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "This driver will be permanently deleted!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: "{{ route('driver.deleteDriver', ':id') }}".replace(":id",
+                                    id),
+                                type: "DELETE",
+                                data: {
+                                    _token: "{{ csrf_token() }}"
+                                },
+                                success: function(response) {
+                                    Swal.fire({
+                                        title: "Deleted!",
+                                        text: "Driver deleted successfully.",
+                                        icon: "success",
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
 
-                                // Remove the row smoothly without refresh
-                                $("#classRow_" + id).fadeOut(500, function() {
-                                    $(this).remove();
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to delete class. Try again.",
-                                    icon: "error",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                                console.log(xhr.responseText); // Debugging
-                            }
-                        });
-                    }
+                                    // Remove the row smoothly
+                                    $("#classRow_" + id).fadeOut(500, function() {
+                                        $(this).remove();
+                                    });
+                                },
+                                error: function(xhr) {
+                                    Swal.fire("Error!",
+                                        "Failed to delete driver. Try again.", "error");
+                                    console.log("AJAX Error:", xhr.responseText);
+                                }
+                            });
+                        }
+                    });
                 });
-            });
 
-            // Handle Edit Button Click
-            $(document).ready(function() {
+                /**
+                 * ✅ EDIT DRIVER - SHOW MODAL DATA
+                 * - Fills the modal with existing driver data.
+                 */
+
                 $('.editDriver').on('click', function() {
                     let id = $(this).data('id');
                     let name = $(this).data('name');
@@ -493,57 +463,77 @@
 
 
                 });
-            });
 
-            // Handle Update Form Submission
-            $('#editDriverForm').submit(function(e) {
-                e.preventDefault(); // Prevent default form submission
 
-                let driverid = $('#edit_driver_id').val(); // Get class ID
-                let formData = {
-                    _token: "{{ csrf_token() }}",
-                    name: $('#edit_name').val(),
-                    vehicle_number: $('#edit_vehicle_number').val(), // Corrected key name
-                    phone: $('#edit_phone').val(),
-                    balance: $('#edit_balance').val(),
-                    number_of_trips: $('#edit_number_of_trips').val(),
-                };
-                $.ajax({
-                    url: "{{ route('driver.UpdateDriver', ':id') }}".replace(':id',
-                        driverid), // Fixed route name
-                    type: "PUT",
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
+                /**
+                 * ✅ HANDLE DRIVER UPDATE FORM SUBMISSION
+                 * - Sends an AJAX request to update driver details.
+                 */
+                $('#editDriverForm').submit(function(e) {
+                    e.preventDefault(); // Prevent default form submission
+
+                    let driverid = $('#edit_driver_id').val(); // Get class ID
+                    let formData = {
+                        _token: "{{ csrf_token() }}",
+                        name: $('#edit_name').val(),
+                        vehicle_number: $('#edit_vehicle_number').val(), // Corrected key name
+                        phone: $('#edit_phone').val(),
+                        balance: $('#edit_balance').val(),
+                        number_of_trips: $('#edit_number_of_trips').val(),
+                    };
+                    $.ajax({
+                        url: "{{ route('driver.UpdateDriver', ':id') }}".replace(':id',
+                            driverid), // Fixed route name
+                        type: "PUT",
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                Toastify({
+                                    text: "Driver updated successfully!",
+                                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                                    className: "info",
+                                    gravity: "top",
+                                    position: "right",
+                                    duration: 3000
+                                }).showToast();
+
+                                // Update the table row dynamically
+                                $('#classRow_' + driverid).find('td:nth-child(2)').text(response
+                                    .data.name);
+                                $('#classRow_' + driverid).find('td:nth-child(3)').text(response
+                                    .data
+                                    .vehicle_number);
+                                $('#classRow_' + driverid).find('td:nth-child(4)').text(response
+                                    .data.phone);
+                                $('#classRow_' + driverid).find('td:nth-child(7)').text(response
+                                    .data.balance);
+                                $('#classRow_' + driverid).find('td:nth-child(6)').text(response
+                                    .data
+                                    .number_of_trips);
+
+
+                                // Hide modal properly
+                                $('#editDriverModal').modal('hide');
+                                $('.modal-backdrop').remove();
+                                $('body').removeClass('modal-open');
+
+                                // Refresh page after 1.5 seconds
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                Toastify({
+                                    text: "Error updating supplier.",
+                                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                                    className: "error",
+                                    gravity: "top",
+                                    position: "right",
+                                    duration: 5000
+                                }).showToast();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText); // Debugging
                             Toastify({
-                                text: "Driver updated successfully!",
-                                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-                                className: "info",
-                                gravity: "top",
-                                position: "right",
-                                duration: 3000
-                            }).showToast();
-
-                            // Update the table row dynamically
-                            $('#classRow_' + driverid).find('td:nth-child(2)').text(response.data.name);
-                            $('#classRow_' + driverid).find('td:nth-child(3)').text(response.data
-                                .vehicle_number);
-                            $('#classRow_' + driverid).find('td:nth-child(4)').text(response.data.phone);
-                            $('#classRow_' + driverid).find('td:nth-child(7)').text(response.data.balance);
-                            $('#classRow_' + driverid).find('td:nth-child(6)').text(response.data
-                                .number_of_trips);
-
-
-                            // Hide modal properly
-                            $('#editDriverModal').modal('hide');
-                            $('.modal-backdrop').remove();
-                            $('body').removeClass('modal-open');
-
-                            // Refresh page after 1.5 seconds
-                            setTimeout(() => location.reload(), 1500);
-                        } else {
-                            Toastify({
-                                text: "Error updating supplier.",
+                                text: "Something went wrong. Please try again.",
                                 backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
                                 className: "error",
                                 gravity: "top",
@@ -551,20 +541,9 @@
                                 duration: 5000
                             }).showToast();
                         }
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText); // Debugging
-                        Toastify({
-                            text: "Something went wrong. Please try again.",
-                            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                            className: "error",
-                            gravity: "top",
-                            position: "right",
-                            duration: 5000
-                        }).showToast();
-                    }
-                });
+                    });
 
+                });
             });
         </script>
     @endsection

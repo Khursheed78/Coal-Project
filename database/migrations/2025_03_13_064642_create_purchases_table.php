@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Purchases', function (Blueprint $table) {
+        Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('supplier_id');
             $table->unsignedBigInteger('driver_id');
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('transportation_cost', 10, 2)->default(0);
             $table->string('from');
             $table->string('to');
+            $table->date('date'); // 🟢 Simply Adding `date` Column
 
             // Foreign keys
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
@@ -30,14 +31,14 @@ return new class extends Migration
 
             $table->timestamps();
         });
-    }
 
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('purchases');
     }
 };

@@ -81,7 +81,7 @@
             <div class="col-md-6 stretch-card transparent">
               <div class="card card-light-danger">
                 <div class="card-body">
-                    <p class="mb-4">Number of Stocks</p>
+                    <p class="mb-4">Net Stocks</p>
                     <p class="fs-30 mb-2">
                         {{$totalStock}} <span style="font-size: 14px;">Tons</span>
                     </p>

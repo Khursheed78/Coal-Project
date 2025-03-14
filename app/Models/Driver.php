@@ -11,8 +11,8 @@ class Driver extends Model
         'name',
         'vehicle_number',
         'phone',
-        'number_of_trips',
-        'balance',
+
+
 
     ];
 }

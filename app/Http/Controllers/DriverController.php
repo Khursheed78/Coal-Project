@@ -25,15 +25,15 @@ class DriverController extends Controller
                'name'           => 'required|string|max:255',
                'vehicle_number' => 'required|string|max:255',
                'phone'          => 'required|numeric|digits_between:7,15',
-               'number_of_trips'=> 'required|numeric',
-               'balance'        => 'required|numeric',
+            //    'number_of_trips'=> 'required|numeric',
+
            ]);
         $driver = Driver::create([
             'name'               => $request->name,
             'vehicle_number'     => $request->vehicle_number,
             'phone'              => $request->phone,
-            'number_of_trips'    => $request->number_of_trips,
-            'balance'            => $request->balance,
+            // 'number_of_trips'    => $request->number_of_trips,
+
 
         ]);
         return response()->json([
@@ -48,8 +48,8 @@ class DriverController extends Controller
             'name'           => 'required|string|max:255',
             'vehicle_number' => 'required|string|max:255',
             'phone'          => 'required|numeric|digits_between:7,15',
-            'number_of_trips' => 'required|numeric',
-            'balance'        => 'required|numeric',
+            // 'number_of_trips' => 'required|numeric',
+
         ]);
 
         $driver = Driver::find($id);
@@ -64,8 +64,8 @@ class DriverController extends Controller
             'name'           => $request->name,
             'vehicle_number' => $request->vehicle_number,
             'phone'          => $request->phone,
-            'number_of_trips' => $request->number_of_trips,
-            'balance'        => $request->balance,
+            // 'number_of_trips' => $request->number_of_trips,
+
         ]);
 
         return response()->json([
@@ -85,29 +85,29 @@ class DriverController extends Controller
             return response()->json(['error' => 'Driver not found'], 404);
         }
     }
-    public function updateBalance(Request $request)
-{
-    $driver = Driver::find($request->driver_id);
+//     public function updateBalance(Request $request)
+// {
+//     $driver = Driver::find($request->driver_id);
 
-    if (!$driver) {
-        return response()->json(['error' => 'Driver not found'], 404);
-    }
+//     if (!$driver) {
+//         return response()->json(['error' => 'Driver not found'], 404);
+//     }
 
-    // Deduct payment amount from balance
-    $driver->balance -= $request->payment_amount;
-    if ($driver->balance <= 0) {
-        $driver->balance = 0;  // Ensure balance is zero
-        $driver->number_of_trips = 0;     // Reset trips to zero
-    }
+//     // Deduct payment amount from balance
+//     $driver->balance -= $request->payment_amount;
+//     if ($driver->balance <= 0) {
+//         $driver->balance = 0;  // Ensure balance is zero
+//         $driver->number_of_trips = 0;     // Reset trips to zero
+//     }
 
-    $driver->save();
+//     $driver->save();
 
-    return response()->json([
-        'success' => true,
-        'new_balance' => $driver->balance,
-        'new_trips' => $driver->number_of_trips
-    ]);
-}
+//     return response()->json([
+//         'success' => true,
+//         'new_balance' => $driver->balance,
+//         'new_trips' => $driver->number_of_trips
+//     ]);
+// }
 
 //     public function updateBalance(Request $request)
 // {

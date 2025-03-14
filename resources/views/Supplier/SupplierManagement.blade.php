@@ -35,7 +35,6 @@
                                         <th>Phone</th>
                                         <th>Email</th>
                                         <th>Address</th>
-                                        <th>Balance</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -52,7 +51,7 @@
                                                     {{ $supplier->address }}
                                                 </div>
                                             </td>
-                                            <td>{{ $supplier->balance }}</td>
+
                                             <td>
                                                 <button class="btn btn-primary btn-sm editClass"
                                                     data-id="{{ $supplier->id }}"
@@ -90,7 +89,7 @@
             </div>
         @endif
         <!-- Save Modal -->
-        <div class="modal fade" id="SupplierModal"  tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+        <div class="modal fade" id="SupplierModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -128,11 +127,11 @@
                                 <input type="text" class="form-control" id="address" name="address"
                                     placeholder="Address">
                             </div>
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label for="balance">Balance</label>
                                 <input type="number" class="form-control" id="balance" name="balance"
                                     placeholder="Balance">
-                            </div>
+                            </div> --}}
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -143,7 +142,7 @@
                 </div>
             </div>
         </div>
-        <!-- Edit Class Modal -->
+
         <!-- Edit Supplier Modal -->
         <div class="modal fade" id="editSupplierModal" tabindex="-1" aria-labelledby="editSupplierModalLabel"
             aria-hidden="true">
@@ -187,11 +186,7 @@
                                 <input type="text" class="form-control" id="edit_address" name="address"
                                     placeholder="Address">
                             </div>
-                            <div class="form-group">
-                                <label for="edit_balance">Balance</label>
-                                <input type="number" class="form-control" id="edit_balance" name="balance"
-                                    placeholder="Balance">
-                            </div>
+
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Update</button>
@@ -202,66 +197,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-        {{-- Ajax --}}
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        $('#searchBtn').on('click', function() {
-            let phone = $('#searchPhone').val().trim();
-
-            $.ajax({
-                url: "{{ route('admin.searchSuppliers') }}",
-                type: "GET",
-                data: { phone: phone },
-                success: function(response) {
-                    let tableBody = $('tbody');
-                    tableBody.empty(); // Clear previous results
-
-                    if (response.length > 0) {
-                        $.each(response, function(index, supplier) {
-                            tableBody.append(`
-                                <tr>
-                                    <td>${supplier.id}</td>
-                                    <td>${supplier.supplier_name}</td>
-                                    <td>${supplier.contact_person}</td>
-                                    <td>${supplier.phone}</td>
-                                    <td>${supplier.email}</td>
-                                    <td>${supplier.address}</td>
-                                    <td>${supplier.balance}</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm editClass"
-                                            data-id="${supplier.id}"
-                                            data-supplier_name="${supplier.supplier_name}"
-                                            data-contact_person="${supplier.contact_person}"
-                                            data-phone="${supplier.phone}"
-                                            data-email="${supplier.email}"
-                                            data-balance="${supplier.balance}"
-                                            data-address="${supplier.address}"
-                                            data-bs-toggle="modal" data-bs-target="#editSupplierModal">
-                                            <i class="fa fa-edit text-white"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm deleteClass"
-                                            data-id="${supplier.id}">
-                                            <i class="fa fa-trash text-white"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `);
-                        });
-                    } else {
-                        tableBody.append(`<tr><td colspan="8" class="text-center">No results found</td></tr>`);
-                    }
-                }
-            });
-        });
-    });
-</script>
-
 
         <!-- Error Modal -->
         <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -278,14 +213,79 @@
             </div>
         </div>
 
+
+
+        {{-- Ajax --}}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            // Save Data
             $(document).ready(function() {
-                $('#SupplierForm').submit(function(e) {
-                    e.preventDefault();
-                    var formData = $(this).serialize();
+                /**
+                 * ✅ SEARCH SUPPLIERS
+                 * - Fetches supplier data based on phone number input.
+                 */
+                $("#searchBtn").on("click", function() {
+                    let phone = $("#searchPhone").val().trim();
+
                     $.ajax({
-                        url: "{{ route('admin.storesupplier') }}",
+                        url: "{{ route('supplier.search') }}",
+                        type: "GET",
+                        data: {
+                            phone: phone
+                        },
+                        success: function(response) {
+                            let tableBody = $("tbody");
+                            tableBody.empty(); // Clear previous results
+
+                            if (response.length > 0) {
+                                $.each(response, function(index, supplier) {
+                                    tableBody.append(`
+                                    <tr id="classRow_${supplier.id}">
+                                        <td>${supplier.id}</td>
+                                        <td>${supplier.supplier_name}</td>
+                                        <td>${supplier.contact_person}</td>
+                                        <td>${supplier.phone}</td>
+                                        <td>${supplier.email}</td>
+                                        <td>${supplier.address}</td>
+                                        <td>${supplier.balance}</td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm editSupplier"
+                                                data-id="${supplier.id}"
+                                                data-supplier_name="${supplier.supplier_name}"
+                                                data-contact_person="${supplier.contact_person}"
+                                                data-phone="${supplier.phone}"
+                                                data-email="${supplier.email}"
+                                                data-balance="${supplier.balance}"
+                                                data-address="${supplier.address}"
+                                                data-bs-toggle="modal" data-bs-target="#editSupplierModal">
+                                                <i class="fa fa-edit text-white"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm deleteSupplier"
+                                                data-id="${supplier.id}">
+                                                <i class="fa fa-trash text-white"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `);
+                                });
+                            } else {
+                                tableBody.append(
+                                    `<tr><td colspan="8" class="text-center">No results found</td></tr>`
+                                    );
+                            }
+                        }
+                    });
+                });
+
+                /**
+                 * ✅ ADD SUPPLIER
+                 * - Handles supplier creation form submission.
+                 */
+                $("#SupplierForm").submit(function(e) {
+                    e.preventDefault();
+                    let formData = $(this).serialize();
+
+                    $.ajax({
+                        url: "{{ route('supplier.store') }}",
                         type: "POST",
                         data: formData,
                         success: function(response) {
@@ -298,16 +298,16 @@
                                 timer: 3000
                             });
 
-                            $('#SupplierModal').modal('hide');
-                            $('#SupplierForm')[0].reset();
+                            $("#SupplierModal").modal("hide");
+                            $("#SupplierForm")[0].reset();
 
                             setTimeout(function() {
                                 location.reload();
                             }, 1000);
                         },
                         error: function(xhr) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessage = "";
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessage = "";
 
                             $.each(errors, function(key, value) {
                                 errorMessage += value + "\n";
@@ -324,135 +324,147 @@
                         }
                     });
                 });
-            });
 
-            // Handle Delete Button Click
-            $(document).on('click', '.deleteClass', function() {
-                let id = $(this).data('id'); // Get class ID
+                /**
+                 * ✅ DELETE SUPPLIER
+                 * - Deletes a supplier record with confirmation.
+                 */
+                $(document).on("click", ".deleteClass", function() {
+                    let id = $(this).data("id");
 
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This class will be permanently deleted!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('admin.deleteSupplier', ':id') }}".replace(':id', id),
-                            type: "DELETE",
-                            data: {
-                                _token: "{{ csrf_token() }}"
-                            },
-                            success: function(response) {
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Supplier deleted successfully.",
-                                    icon: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "This supplier will be permanently deleted!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: "{{ route('supplier.delete', ':id') }}".replace(
+                                    ":id", id),
+                                type: "DELETE",
+                                data: {
+                                    _token: "{{ csrf_token() }}"
+                                },
+                                success: function(response) {
+                                    Swal.fire({
+                                        title: "Deleted!",
+                                        text: "Supplier deleted successfully.",
+                                        icon: "success",
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
 
-                                // Remove the row smoothly without refresh
-                                $("#classRow_" + id).fadeOut(500, function() {
-                                    $(this).remove();
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to delete class. Try again.",
-                                    icon: "error",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                                console.log(xhr.responseText); // Debugging
-                            }
-                        });
-                    }
+                                    // Remove the row smoothly
+                                    $("#classRow_" + id).fadeOut(500, function() {
+                                        $(this).remove();
+                                    });
+                                },
+                                error: function(xhr) {
+                                    Swal.fire("Error!",
+                                        "Failed to delete supplier. Try again.", "error"
+                                        );
+                                    console.log("AJAX Error:", xhr.responseText);
+                                }
+                            });
+                        }
+                    });
                 });
-            });
 
-            // Handle Edit Button Click
-            $(document).ready(function() {
-                $('.editClass').on('click', function() {
-                    let id = $(this).data('id');
-                    let name = $(this).data('supplier_name');
-                    let contact = $(this).data('contact_person');
-                    let phone = $(this).data('phone');
-                    let email = $(this).data('email');
-                    let balance = $(this).data('balance');
-                    let address = $(this).data('address');
-
+                /**
+                 * ✅ EDIT SUPPLIER
+                 * - Populates modal fields for editing supplier details.
+                 */
+                $(document).on("click", ".editClass", function() {
+                    let id = $(this).data("id");
+                    let name = $(this).data("supplier_name");
+                    let contact = $(this).data("contact_person");
+                    let phone = $(this).data("phone");
+                    let email = $(this).data("email");
+                    let balance = $(this).data("balance");
+                    let address = $(this).data("address");
 
                     // Fill the modal fields
-                    $('#edit_supplier_id').val(id);
-                    $('#edit_supplier_name').val(name);
-                    $('#edit_contact_person').val(contact);
-                    $('#edit_phone').val(phone);
-                    $('#edit_email').val(email);
-                    $('#edit_balance').val(balance);
-                    $('#edit_address').val(address);
-
+                    $("#edit_supplier_id").val(id);
+                    $("#edit_supplier_name").val(name);
+                    $("#edit_contact_person").val(contact);
+                    $("#edit_phone").val(phone);
+                    $("#edit_email").val(email);
+                    $("#edit_balance").val(balance);
+                    $("#edit_address").val(address);
                 });
-            });
 
-            // Handle Update Form Submission
-            $('#editSupplierForm').submit(function(e) {
-                e.preventDefault(); // Prevent default form submission
+                /**
+                 * ✅ UPDATE SUPPLIER
+                 * - Handles supplier update form submission.
+                 */
+                $("#editSupplierForm").submit(function(e) {
+                    e.preventDefault();
+                    let supplierId = $("#edit_supplier_id").val();
+                    let formData = {
+                        _token: "{{ csrf_token() }}",
+                        supplier_name: $("#edit_supplier_name").val(),
+                        contact_person: $("#edit_contact_person").val(),
+                        phone: $("#edit_phone").val(),
+                        email: $("#edit_email").val(),
+                        balance: $("#edit_balance").val(),
+                        address: $("#edit_address").val(),
+                    };
 
-                let supplierid = $('#edit_supplier_id').val(); // Get class ID
-                let formData = {
-                    _token: "{{ csrf_token() }}",
-                    supplier_name: $('#edit_supplier_name').val(),
-                    contact_person: $('#edit_contact_person').val(), // Corrected key name
-                    phone: $('#edit_phone').val(),
-                    email: $('#edit_email').val(),
-                    balance: $('#edit_balance').val(),
-                    address: $('#edit_address').val(),
-                };
+                    $.ajax({
+                        url: "{{ route('supplier.update', ':id') }}".replace(":id", supplierId),
+                        type: "PUT",
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                Toastify({
+                                    text: "Supplier updated successfully!",
+                                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                                    className: "info",
+                                    gravity: "top",
+                                    position: "right",
+                                    duration: 3000
+                                }).showToast();
 
+                                // Update the table row dynamically
+                                $("#classRow_" + supplierId).find("td:nth-child(2)").text(response
+                                    .data.supplier_name);
+                                $("#classRow_" + supplierId).find("td:nth-child(3)").text(response
+                                    .data.contact_person);
+                                $("#classRow_" + supplierId).find("td:nth-child(4)").text(response
+                                    .data.phone);
+                                $("#classRow_" + supplierId).find("td:nth-child(5)").text(response
+                                    .data.email);
+                                $("#classRow_" + supplierId).find("td:nth-child(6)").text(response
+                                    .data.address);
+                                $("#classRow_" + supplierId).find("td:nth-child(7)").text(response
+                                    .data.balance);
 
-                $.ajax({
-                    url: "{{ route('admin.updateSupplier', ':id') }}".replace(':id',
-                        supplierid), // Fixed route name
-                    type: "PUT",
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
+                                // Hide modal properly
+                                $("#editSupplierModal").modal("hide");
+                                $(".modal-backdrop").remove();
+                                $("body").removeClass("modal-open");
+
+                                // Refresh page after 1.5 seconds
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                Toastify({
+                                    text: "Error updating supplier.",
+                                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                                    className: "error",
+                                    gravity: "top",
+                                    position: "right",
+                                    duration: 5000
+                                }).showToast();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText); // Debugging
                             Toastify({
-                                text: "Supplier updated successfully!",
-                                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-                                className: "info",
-                                gravity: "top",
-                                position: "right",
-                                duration: 3000
-                            }).showToast();
-
-                            // Update the table row dynamically
-                            $('#classRow_' + supplierid).find('td:nth-child(2)').text(response.data
-                                .supplier_name);
-                            $('#classRow_' + supplierid).find('td:nth-child(3)').text(response.data
-                                .contact_person);
-                            $('#classRow_' + supplierid).find('td:nth-child(4)').text(response.data.phone);
-                            $('#classRow_' + supplierid).find('td:nth-child(5)').text(response.data.email);
-                            $('#classRow_' + supplierid).find('td:nth-child(6)').text(response.data
-                            .address);
-                            $('#classRow_' + supplierid).find('td:nth-child(7)').text(response.data
-                            .balance);
-
-                            // Hide modal properly
-                            $('#editSupplierModal').modal('hide');
-                            $('.modal-backdrop').remove();
-                            $('body').removeClass('modal-open');
-
-                            // Refresh page after 1.5 seconds
-                            // setTimeout(() => location.reload(), 1500);
-                        } else {
-                            Toastify({
-                                text: "Error updating supplier.",
+                                text: "Something went wrong. Please try again.",
                                 backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
                                 className: "error",
                                 gravity: "top",
@@ -460,20 +472,8 @@
                                 duration: 5000
                             }).showToast();
                         }
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText); // Debugging
-                        Toastify({
-                            text: "Something went wrong. Please try again.",
-                            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                            className: "error",
-                            gravity: "top",
-                            position: "right",
-                            duration: 5000
-                        }).showToast();
-                    }
+                    });
                 });
-
             });
         </script>
     @endsection

@@ -43,7 +43,7 @@
 <body>
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
-        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row ">
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
                 <a class="navbar-brand brand-logo me-5" href="index.html"><img src="assets/images/logo.svg"
                         class="me-2" alt="logo" /></a>
@@ -104,7 +104,7 @@
         <!-- partial -->
         <div class="container-fluid page-body-wrapper">
             <!-- partial:partials/_sidebar.html -->
-            <nav class="sidebar sidebar-offcanvas" id="sidebar"
+            <nav class="sidebar sidebar-offcanvas sticky-top" id="sidebar"
                 style=" display: flex; flex-direction: column; height: 100vh;">
                 <ul class="nav" style="flex-grow: 1; poistion: fixed;">
                     <!-- Other Sidebar Items -->
@@ -124,7 +124,7 @@
 
                     <li class="nav-item">
                         @if (Auth::check() && Auth::user()->role === 'admin')
-                            <a class="nav-link" href="{{ route('admin.SupplierManagement') }}">
+                            <a class="nav-link" href="{{ route('supplier.management') }}">
                                 <i class="fa fa-industry menu-icon"></i>
                                 <span class="menu-title">Supply Management</span>
                             </a>
@@ -135,124 +135,20 @@
                             </a>
                         @endif
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.CustomerManagement') }}">
-                            <i class="fa fa-users menu-icon"></i>
-                            <span class="menu-title">Customer Management</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('driver.create') }}">
                             <i class="fa fa-truck menu-icon"></i>
                             <span class="menu-title">Driver Management</span>
                         </a>
                     </li>
-                    {{-- <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="invoiceDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-warehouse menu-icon"></i>
-                            <span class="menu-title">Invoice Management</span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="invoiceDropdown">
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fa fa-list menu-icon"></i> All Invoices
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('invoices.create') }}">
-                                    <i class="fa fa-warehouse menu-icon"></i>
-                                    <span class="menu-title">Sale Invoice </span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('P_invoices.create') }}">
-                                    <i class="fa fa-warehouse menu-icon"></i>
-                                    <span class="menu-title">Purcahse Invoice</span>
-                                </a>
-                            </li>
-                            <li>
-                                    <a class="dropdown-item" href="{{ route('P_invoices.create') }}">
-                                        <i class="fa fa-file-invoice-dollar menu-icon"></i> Add Purchase Invoice
-                                    </a>
-                                </li>
-                        </ul>
-                    </li> --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{route('stock')}}">
-                            <i class="fa fa-warehouse menu-icon"></i>
-                            <span class="menu-title">Stock Management</span>
-                        </a>
-                    </li>
-
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('newpurchase') }}">
                             <i class="fa fa-credit-card menu-icon"></i>
-                            <span class="menu-title">Purchase Invoice</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('expenses.index') }}">
-                            <i class="fa fa-credit-card menu-icon"></i>
-                            <span class="menu-title">Expanses</span>
-                        </a>
-                    </li>
-{{--
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-map menu-icon"></i>
-                            <span class="menu-title">Inventory Tracking</span>
-                        </a>
-                    </li> --}}
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-shopping-cart menu-icon"></i>
-                            <span class="menu-title">Sales</span>
+                            <span class="menu-title">Purchase Management</span>
                         </a>
                     </li>
 
-                    {{-- <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-first-order menu-icon"></i>
-                            <span class="menu-title">Orders Management</span>
-                        </a>
-                    </li> --}}
-                </ul>
-                {{-- <ul class="nav user-pages" style="margin-top: auto;">
-                        <li class="nav-item">
-                            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#auth" aria-expanded="false"
-                                aria-controls="auth">
-                                <div>
-                                    <i class="icon-head menu-icon"></i>
-                                    <span class="menu-title">User Pages</span>
-                                </div>
-                                <i class="menu-arrow"></i>
-                            </a> --}}
-                {{-- <div class="collapse" id="auth">
-                                <ul class="nav flex-column sub-menu">
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-white">
-                                            <i class="ti-power-off text-white"></i> Logout
-                                        </button>
-                                    </form>
-                                    @if (Auth::check())
-                                    @if (Auth::user()->role === 'admin')
-                                        <a href="{{ route('admin.profile') }}" class="dropdown-item text-white">
-                                            <i class="fa fa-user" aria-hidden="true"></i> Profile
-                                        </a>
-                                    @elseif(Auth::user()->role === 'manager')
-                                        <a href="{{ route('manager.profile') }}" class="dropdown-item text-white">
-                                            <i class="fa fa-user" aria-hidden="true"></i> Profile
-                                        </a>
-                                    @endif
-                                @endif
-
-                                </ul>
-                            </div> --}}
-                {{-- </li>
-                    </ul> --}}
 
             </nav>

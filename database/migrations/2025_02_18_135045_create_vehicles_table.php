@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('vehicle_number');
             $table->string('phone');
-            $table->integer('number_of_trips');
-            $table->integer('balance');
+
             $table->timestamps();
         });
     }

@@ -1,135 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Invoice</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .invoice-box {
+            font-family: Arial, sans-serif;
             max-width: 800px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
             margin: auto;
         }
-        .invoice-header {
+
+        h2 {
             text-align: center;
-            color: #333;
-            position: relative;
         }
-        .invoice-header h2 {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .invoice-header .date {
-            position: absolute;
-            left: 20px;
-            top: 10px;
-            font-size: 14px;
-            color: #555;
-        }
-        .company-name {
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .invoice-details {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .invoice-details div {
-            width: 48%;
-        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        th {
-            background: #2575fc;
-            color: white;
-            padding: 10px;
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
             text-align: left;
+            font-size: 14px;
         }
-        td {
-            padding: 10px;
-            border: 1px solid #ddd;
+
+        th {
+            background-color: #f2f2f2;
+            font-size: 16px;
         }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        .total {
-            text-align: right;
-            font-size: 18px;
+
+        .paid {
+            color: green;
             font-weight: bold;
         }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: gray;
+
+        .unpaid {
+            color: red;
+            font-weight: bold;
+        }
+
+        .important-data {
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="invoice-box">
-    <!-- Company Name -->
-    <div class="company-name">Afridi Mine Company</div>
+    <h2>Purchase Invoice</h2>
 
-    <!-- Invoice Header -->
-    <div class="invoice-header">
-        <p class="date">Date: {{ date('d-m-Y') }}</p>
-        <h2>Purchase Invoice</h2>
-    </div>
-
-    <!-- Invoice Details -->
-    <div class="invoice-details">
-        <div>
-            <strong>Supplier:</strong> {{ $supplier->supplier_name ?? 'N/A' }}<br>
-            <strong>Phone:</strong> {{ $supplier->phone ?? 'N/A' }}<br>
-        </div>
-        <div>
-            <strong>Driver:</strong> {{ $driver->name ?? 'N/A' }}<br>
-            <strong>Trips:</strong> {{ $driver->number_of_trips ?? 'N/A' }}<br>
-        </div>
-    </div>
-
-    <!-- Invoice Table -->
     <table>
         <tr>
-            <th>Description</th>
-            <th>Quantity (Tons)</th>
-            <th>Price per Ton</th>
-            <th>Total</th>
+            <th>Date</th>
+            <td>{{ $date ?? 'N/A' }}</td>
         </tr>
         <tr>
-            <td>Coal</td>
-            <td>{{ $quantity_tons }}</td>
-            <td>${{ $price_per_ton }}</td>
-            <td>${{ $total_price }}</td>
+            <th>Supplier</th>
+            <td>{{ $supplier_name ?? 'N/A' }}
+        </tr>
+        <tr>
+            <th>Phone</th>
+            <td>({{ $supplier_phone ?? 'N/A' }})</td>
+        </tr>
+        <tr>
+            <th>Driver</th>
+            <td>{{ $driver_name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Phone</th>
+            <td>{{ $driver_phone ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>From</th>
+            <td>{{ $from ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>To</th>
+            <td>{{ $to ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Supplier Balance</th>
+            <td class="{{ ($supplier_balance ?? 0) == 0 ? 'paid' : 'unpaid' }}">
+                {{ number_format($supplier_balance ?? 0, 2) }}
+                ({{ ($supplier_balance ?? 0) == 0 ? 'Paid' : 'Unpaid' }})
+            </td>
+        </tr>
+        <tr>
+            <th>Driver Balance</th>
+            <td class="{{ ($driver_balance ?? 0) == 0 ? 'paid' : 'unpaid' }}">
+                {{ number_format($driver_balance ?? 0, 2) }}
+                ({{ ($driver_balance ?? 0) == 0 ? 'Paid' : 'Unpaid' }})
+            </td>
         </tr>
     </table>
 
-    <!-- Total Amount -->
-    <p class="total">Grand Total: ${{ $total_price }}</p>
-
-    <!-- Footer -->
-    <div class="footer">
-        Thank you for your business! | Contact: {{ $supplier->phone ?? 'N/A' }}
-    </div>
-</div>
+    <h3>Payment Details</h3>
+    <table>
+        <tr>
+            <th>Quantity (Tons)</th>
+            <th>Price/Ton</th>
+            <th>Transportation Cost</th>
+            <th>Total Price</th>
+        </tr>
+        <tr>
+            <td class="important-data">{{ number_format($quantity_tons ?? 0, 2) }}</td>
+            <td class="important-data">{{ number_format($price_per_ton ?? 0, 2) }}</td>
+            <td class="important-data">{{ number_format($transportation_cost ?? 0, 2) }}</td>
+            <td class="important-data"><strong>{{ number_format($total_price ?? 0, 2) }}</strong></td>
+        </tr>
+    </table>
 
 </body>
 </html>
