@@ -19,13 +19,22 @@ class PurchaseController extends Controller
         $stocks = Purchase::all();
         return view('stock.stock', compact('stocks'));
     }
-
     public function newpurchase()
     {
         $customers = Customer::all();
         $suppliers = Supplier::all();
         $drivers = Driver::all();
-        $purchases = Purchase::with(['supplier', 'driver'])->paginate(10);
+        $purchases = Purchase::with(['supplier', 'driver'])
+            ->get()
+            ->map(function ($purchase) {
+                $purchase->total_amount = number_format(
+                    ($purchase->quantity * $purchase->price_per_ton) +
+                    $purchase->transportation_cost +
+                    $purchase->supplier_balance +
+                    $purchase->driver_balance, 2
+                );
+                return $purchase;
+            });
 
         $totaltrips = Purchase::count();
         $supplierCount = Purchase::distinct('supplier_id')->count('supplier_id');
@@ -53,8 +62,19 @@ class PurchaseController extends Controller
                 ];
             });
 
-        return view('Invoices.NewPurchase', compact('customers', 'suppliers', 'drivers', 'purchases', 'supplierCount', 'driverCount', 'totaltrips', 'supplierTrips', 'driverTrips'));
+        return view('Purchases.NewPurchase', compact(
+            'customers',
+            'suppliers',
+            'drivers',
+            'purchases',
+            'supplierCount',
+            'driverCount',
+            'totaltrips',
+            'supplierTrips',
+            'driverTrips'
+        ));
     }
+
 
     public function store(Request $request)
     {
@@ -175,33 +195,44 @@ class PurchaseController extends Controller
     //Update Section
     public function UpdatePurchase(Request $request, $id)
     {
-        // Validate the request
-        $request->validate([
+        // Validate incoming request
+        $validatedData = $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'driver_id' => 'required|exists:drivers,id',
-            'quantity' => 'required|numeric|min:1',
-            'price_per_ton' => 'required|numeric|min:1',
-            'transportation_cost' => 'nullable|numeric|min:0',
+            'quantity' => 'required|numeric',
+            'price_per_ton' => 'required|numeric',
+            'transportation_cost' => 'nullable|numeric',
             'from' => 'required|string|max:255',
             'to' => 'required|string|max:255',
+            'supplier_balance' => 'nullable|numeric',
+            'driver_balance' => 'nullable|numeric',
         ]);
 
-        // Update the purchase using Eloquent's update() method
-        Purchase::where('id', $id)->update([
-            'supplier_id' => $request->supplier_id,
-            'driver_id' => $request->driver_id,
-            'quantity' => $request->quantity,
-            'price_per_ton' => $request->price_per_ton,
-            'transportation_cost' => $request->transportation_cost,
-            'from' => $request->from,
-            'to' => $request->to,
-        ]);
+        // Find the existing purchase record
+        $purchase = Purchase::findOrFail($id);
 
+        // Update the fields
+        $purchase->update($validatedData);
+
+        // Return JSON response for AJAX
         return response()->json([
             'success' => true,
-            'message' => 'Purchase updated successfully!',
+            'message' => 'Supplier details updated successfully!',
+            'data' => [
+                'id' => $purchase->id,
+                'supplier_name' => $purchase->supplier->supplier_name ?? 'N/A',
+                'driver_name' => $purchase->driver->name ?? 'N/A',
+                'quantity' => $purchase->quantity,
+                'price_per_ton' => $purchase->price_per_ton,
+                'from' => $purchase->from,
+                'to' => $purchase->to,
+                'transportation_cost' => $purchase->transportation_cost,
+                'supplier_balance' => $purchase->supplier_balance,
+                'driver_balance' => $purchase->driver_balance,
+            ]
         ]);
     }
+
 
 
 

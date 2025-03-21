@@ -18,11 +18,11 @@
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <div class="input-group" style="max-width: 300px;">
-                                        <input type="text" id="searchPhone" class="form-control"
-                                            placeholder="Search by phone number">
+                                        <input type="text" id="searchPhone" class="form-control" placeholder="Search by phone number">
                                         <button class="btn btn-primary" id="searchBtn">Search</button>
                                     </div>
                                 </div>
+
                             </div>
                         @endif
                         <div class="table-responsive">
@@ -38,7 +38,7 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="supplierTableBody">
                                     @foreach ($suppliers as $supplier)
                                         <tr id="classRow_{{ $supplier->id }}">
                                             <td>{{ $supplier->id }}</td>
@@ -51,7 +51,6 @@
                                                     {{ $supplier->address }}
                                                 </div>
                                             </td>
-
                                             <td>
                                                 <button class="btn btn-primary btn-sm editClass"
                                                     data-id="{{ $supplier->id }}"
@@ -59,8 +58,6 @@
                                                     data-contact_person="{{ $supplier->contact_person }}"
                                                     data-phone="{{ $supplier->phone }}"
                                                     data-email="{{ $supplier->email }}"
-                                                    data-phone="{{ $supplier->balance }}"
-                                                    data-balance="{{ $supplier->balance }}"
                                                     data-address="{{ $supplier->address }}" data-bs-toggle="modal"
                                                     data-bs-target="#editSupplierModal">
                                                     <i class="fa fa-edit text-white"></i>
@@ -127,11 +124,6 @@
                                 <input type="text" class="form-control" id="address" name="address"
                                     placeholder="Address">
                             </div>
-                            {{-- <div class="form-group">
-                                <label for="balance">Balance</label>
-                                <input type="number" class="form-control" id="balance" name="balance"
-                                    placeholder="Balance">
-                            </div> --}}
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -219,67 +211,97 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
+
                 /**
                  * ✅ SEARCH SUPPLIERS
                  * - Fetches supplier data based on phone number input.
                  */
-                $("#searchBtn").on("click", function() {
-                    let phone = $("#searchPhone").val().trim();
+
+                $("#searchBtn").click(function() {
+                    let phoneNumber = $("#searchPhone").val().trim();
+
+                    if (phoneNumber === "") {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Enter a phone number!",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
 
                     $.ajax({
-                        url: "{{ route('supplier.search') }}",
+                        url: "{{ route('supplier.searchByPhone') }}",
                         type: "GET",
                         data: {
-                            phone: phone
+                            phone: phoneNumber
                         },
                         success: function(response) {
-                            let tableBody = $("tbody");
-                            tableBody.empty(); // Clear previous results
+                            if (response.success) {
+                                let suppliers = response.suppliers;
+                                let tableBody = $("#supplierTableBody");
+                                tableBody.empty(); // Clear table before appending new data
 
-                            if (response.length > 0) {
-                                $.each(response, function(index, supplier) {
-                                    tableBody.append(`
-                                    <tr id="classRow_${supplier.id}">
-                                        <td>${supplier.id}</td>
-                                        <td>${supplier.supplier_name}</td>
-                                        <td>${supplier.contact_person}</td>
-                                        <td>${supplier.phone}</td>
-                                        <td>${supplier.email}</td>
-                                        <td>${supplier.address}</td>
-                                        <td>${supplier.balance}</td>
-                                        <td>
-                                            <button class="btn btn-primary btn-sm editSupplier"
-                                                data-id="${supplier.id}"
-                                                data-supplier_name="${supplier.supplier_name}"
-                                                data-contact_person="${supplier.contact_person}"
-                                                data-phone="${supplier.phone}"
-                                                data-email="${supplier.email}"
-                                                data-balance="${supplier.balance}"
-                                                data-address="${supplier.address}"
-                                                data-bs-toggle="modal" data-bs-target="#editSupplierModal">
-                                                <i class="fa fa-edit text-white"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm deleteSupplier"
-                                                data-id="${supplier.id}">
-                                                <i class="fa fa-trash text-white"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `);
-                                });
-                            } else {
-                                tableBody.append(
-                                    `<tr><td colspan="8" class="text-center">No results found</td></tr>`
+                                if (suppliers.length === 0) {
+                                    tableBody.append(
+                                        `<tr><td colspan="7" class="text-center text-danger">No suppliers found!</td></tr>`
                                     );
+                                } else {
+                                    $.each(suppliers, function(index, supplier) {
+                                        let newRow = `
+                            <tr id="classRow_${supplier.id}">
+                                <td>${supplier.id}</td>
+                                <td>${supplier.supplier_name}</td>
+                                <td>${supplier.contact_person || 'N/A'}</td>
+                                <td>${supplier.phone}</td>
+                                <td>${supplier.email || 'N/A'}</td>
+                                <td>
+                                    <div style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                                        ${supplier.address || 'N/A'}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm editClass"
+                                        data-id="${supplier.id}"
+                                        data-supplier_name="${supplier.supplier_name}"
+                                        data-contact_person="${supplier.contact_person || ''}"
+                                        data-phone="${supplier.phone}"
+                                        data-email="${supplier.email || ''}"
+                                        data-address="${supplier.address || ''}"
+                                        data-bs-toggle="modal" data-bs-target="#editSupplierModal">
+                                        <i class="fa fa-edit text-white"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm deleteClass" data-id="${supplier.id}">
+                                        <i class="fa fa-trash text-white"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                                        tableBody.append(newRow);
+                                    });
+                                }
                             }
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Something went wrong!",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 });
+            });
+
+
+            $(document).ready(function() {
 
                 /**
                  * ✅ ADD SUPPLIER
                  * - Handles supplier creation form submission.
                  */
+
                 $("#SupplierForm").submit(function(e) {
                     e.preventDefault();
                     let formData = $(this).serialize();
@@ -298,17 +320,53 @@
                                 timer: 3000
                             });
 
+                            // Close the modal properly
                             $("#SupplierModal").modal("hide");
+
+                            // Remove modal backdrop (Fixes dark overlay issue)
+                            $(".modal-backdrop").remove();
+                            $("body").removeClass("modal-open");
+
+                            // Reset the form
                             $("#SupplierForm")[0].reset();
 
-                            setTimeout(function() {
-                                location.reload();
-                            }, 1000);
+                            // Append new supplier row to the table
+                            let newRow = `
+                    <tr id="classRow_${response.supplier.id}">
+                        <td>${response.supplier.id}</td>
+                        <td>${response.supplier.supplier_name}</td>
+                        <td>${response.supplier.contact_person}</td>
+                        <td>${response.supplier.phone}</td>
+                        <td>${response.supplier.email}</td>
+                        <td>
+                            <div style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                                ${response.supplier.address}
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm editClass"
+                                data-id="${response.supplier.id}"
+                                data-supplier_name="${response.supplier.supplier_name}"
+                                data-contact_person="${response.supplier.contact_person}"
+                                data-phone="${response.supplier.phone}"
+                                data-email="${response.supplier.email}"
+                                data-balance="${response.supplier.balance}"
+                                data-address="${response.supplier.address}"
+                                data-bs-toggle="modal" data-bs-target="#editSupplierModal">
+                                <i class="fa fa-edit text-white"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm deleteClass" data-id="${response.supplier.id}">
+                                <i class="fa fa-trash text-white"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+
+                            $("tbody").append(newRow); // Append row without reloading
+
                         },
                         error: function(xhr) {
                             let errors = xhr.responseJSON.errors;
                             let errorMessage = "";
-
                             $.each(errors, function(key, value) {
                                 errorMessage += value + "\n";
                             });
@@ -324,6 +382,9 @@
                         }
                     });
                 });
+
+
+
 
                 /**
                  * ✅ DELETE SUPPLIER
@@ -366,7 +427,7 @@
                                 error: function(xhr) {
                                     Swal.fire("Error!",
                                         "Failed to delete supplier. Try again.", "error"
-                                        );
+                                    );
                                     console.log("AJAX Error:", xhr.responseText);
                                 }
                             });
@@ -449,7 +510,7 @@
                                 $("body").removeClass("modal-open");
 
                                 // Refresh page after 1.5 seconds
-                                setTimeout(() => location.reload(), 1500);
+                                // setTimeout(() => location.reload(), 1500);
                             } else {
                                 Toastify({
                                     text: "Error updating supplier.",

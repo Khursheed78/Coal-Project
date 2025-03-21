@@ -16,16 +16,23 @@ return new class extends Migration
             $table->string('name');
             $table->string('vehicle_number');
             $table->string('phone');
+            $table->integer('no_of_trips'); // Fixed: No spaces & changed to integer
+            $table->decimal('balance', 10, 2); // Fixed: Balance should be decimal for money
 
             $table->timestamps();
         });
+
     }
+
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('Drivers');
+        Schema::table('drivers', function (Blueprint $table) {
+            $table->dropColumn(['no_of_trips', 'balance']); // Remove columns if rolled back
+        });
     }
+
 };

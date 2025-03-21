@@ -18,11 +18,9 @@
                                     </button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
-                                    <div class="input-group" style="max-width: 300px;">
-                                        <input type="text" id="searchPhone" class="form-control"
-                                            placeholder="Search by phone number">
-                                        <button class="btn btn-primary" id="searchBtn">Search</button>
-                                    </div>
+                                <div class="input-group" style="max-width: 300px;">
+                                    <input type="text" id="searchPhone" class="form-control" placeholder="Search by phone number">
+                                    <button class="btn btn-primary" id="searchBtn">Search</button>
                                 </div>
                             </div>
                         @endif
@@ -35,35 +33,32 @@
                                         <th>Driver Name</th>
                                         <th>Vehicle Number</th>
                                         <th>Phone</th>
-                                        {{-- <th>No of Trips</th> --}}
-                                        {{-- <th>Balance</th>
-                                        <th>Payment Status</th> --}}
+                                        <th>No of Trips</th>
+                                        <th>Balance</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="driverTableBody">
                                     @foreach ($drivers as $driver)
                                         <tr id="classRow_{{ $driver->id }}">
                                             <td>{{ $driver->id }}</td>
                                             <td>{{ $driver->name }}</td>
                                             <td>{{ $driver->vehicle_number }}</td>
                                             <td>{{ $driver->phone }}</td>
-
+                                            <td>{{ $driver->no_of_trips }}</td>
+                                            <td>{{ $driver->balance }}</td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm editDriver"
-                                                    data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
+                                                    data-id="{{ $driver->id }}"
+                                                    data-name="{{ $driver->name }}"
                                                     data-vehicle_number="{{ $driver->vehicle_number }}"
-                                                    data-phone="{{ $driver->phone }}" data-phone="{{ $driver->phone }}"
-                                                    data-phone="{{ $driver->balance }}"
+                                                    data-phone="{{ $driver->phone }}"
+                                                    data-no_of_trips="{{ $driver->no_of_trips }}"
                                                     data-balance="{{ $driver->balance }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number_of_trips="{{ $driver->number_of_trips }}"
-                                                    data-number="{{ $driver->number }}" data-bs-toggle="modal"
-                                                    data-bs-target="#editDriverModal">
+                                                    data-bs-toggle="modal" data-bs-target="#editDriverModal">
                                                     <i class="fa fa-edit text-white"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm deletedriver"
-                                                    data-id="{{ $driver->id }}">
+                                                <button class="btn btn-danger btn-sm deleteDriver" data-id="{{ $driver->id }}">
                                                     <i class="fa fa-trash text-white"></i>
                                                 </button>
                                             </td>
@@ -71,10 +66,11 @@
                                     @endforeach
                                 </tbody>
                             </table>
+
                         </div>
 
                         <div class="d-flex justify-content-center mt-3" style="gap: 10px;">
-                            {{-- {{ $suppliers->links('pagination::bootstrap-5') }} --}}
+                            {{ $drivers->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>
@@ -94,7 +90,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="SupplierForm">
+                        <form id="DriverForm">
                             @csrf
                             <div class="form-group">
                                 <label for="name">Driver Name</label>
@@ -111,20 +107,16 @@
                             <div class="form-group">
                                 <label for="phone">Phone</label>
                                 <input type="number" class="form-control" id="phone" name="phone"
-                                    placeholder="Phone">
-                            </div>
-
-                            {{-- <div class="form-group">
-                                <label for="number_of_trips">Number of Trips</label>
-                                <input type="number" class="form-control" id="number_of_trips" name="number_of_trips"
-                                    placeholder="Number of Trips">
-                            </div> --}}
-
-                            {{-- <div class="form-group">
+                                       placeholder="Phone">
+                            </div><div class="form-group">
+                                <label for="no_of_trips">No of Trips</label>
+                                <input type="number" class="form-control" id="no_of_trips" name="no_of_trips"
+                                    placeholder="No of Trips">
+                            </div><div class="form-group">
                                 <label for="balance">Balance</label>
                                 <input type="number" class="form-control" id="balance" name="balance"
                                     placeholder="Balance">
-                            </div> --}}
+                            </div>
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -199,12 +191,22 @@
                                 <input type="text" class="form-control" id="edit_vehicle_number"
                                     name="vehicle_number" placeholder="Vehicle Number">
                             </div>
-
                             <div class="form-group">
                                 <label for="edit_phone">Phone</label>
                                 <input type="number" class="form-control" id="edit_phone" name="phone"
                                     placeholder="Phone">
                             </div>
+                            <div class="form-group">
+                                <label for="edit_no_of_trips">No of Trips</label>
+                                <input type="number" class="form-control" id="edit_no_of_trips" name="no_of_trips"
+                                    placeholder="No of Trips">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_balance">Phone</label>
+                                <input type="number" class="form-control" id="edit_balance" name="balance"
+                                    placeholder="Balance">
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Update</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -218,163 +220,132 @@
         {{-- Ajax --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            /**
-             * ✅ SHOW PAYMENT RECORD IN MODAL
-             * - Populates the modal fields when a payment button is clicked.
-             */
+            $(document).ready(function () {
+    $("#searchBtn").click(function () {
+        let phoneNumber = $("#searchPhone").val().trim();
+
+        if (phoneNumber === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Enter a phone number!",
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('driver.searchByPhone') }}",
+            type: "GET",
+            data: { phone: phoneNumber },
+            success: function (response) {
+                if (response.success) {
+                    let drivers = response.drivers;
+                    let tableBody = $("#driverTableBody");
+                    tableBody.empty(); // Clear existing data
+
+                    if (drivers.length === 0) {
+                        tableBody.append(`<tr><td colspan="5" class="text-center text-danger">No drivers found!</td></tr>`);
+                    } else {
+                        $.each(drivers, function (index, driver) {
+                            let newRow = `
+                                <tr id="classRow_${driver.id}">
+                                    <td>${driver.id}</td>
+                                    <td>${driver.name}</td>
+                                    <td>${driver.vehicle_number}</td>
+                                    <td>${driver.phone}</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm editDriver"
+                                            data-id="${driver.id}"
+                                            data-name="${driver.name}"
+                                            data-vehicle_number="${driver.vehicle_number}"
+                                            data-phone="${driver.phone}"
+                                            data-bs-toggle="modal" data-bs-target="#editDriverModal">
+                                            <i class="fa fa-edit text-white"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm deleteDriver" data-id="${driver.id}">
+                                            <i class="fa fa-trash text-white"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                            tableBody.append(newRow);
+                        });
+                    }
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                Swal.fire({
+                    icon: "error",
+                    title: "Something went wrong!",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+});
+
             $(document).ready(function() {
-                $(".payment-btn").click(function() {
-                    let driverName = $(this).attr("data-driver-name");
-                    let balance = $(this).attr("data-balance");
-
-                    console.log("Driver Name:", driverName);
-                    console.log("Balance:", balance);
-
-                    // Set modal values
-                    $("#modalDriverName").text(driverName);
-                    $("#paymentAmount").val(balance); // Show balance in input field
-                });
-
                 /**
-                 * ✅ UPDATE PAYMENT VIA AJAX
-                 * - Sends a request to update the payment balance.
+                 * ✅ SAVE DRIVER RECORD - Adds a new driver via AJAX
                  */
-                $(".payment-btn").click(function() {
-                    let driverName = $(this).attr("data-driver-name");
-                    let balance = $(this).attr("data-balance");
-                    let driverId = $(this).attr("data-driver-id"); // Add driver ID in button
-
-                    $("#modalDriverName").text(driverName);
-                    $("#paymentAmount").val(balance);
-                    $("#submitPayment").data("driver-id", driverId); // Store driver ID for later
-                });
-
-                $("#submitPayment").click(function() {
-                    let driverId = $(this).data("driver-id");
-                    let paymentAmount = $("#paymentAmount").val();
-
-                    $.ajax({
-                        url: "{{ route('update.balance') }}",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            driver_id: driverId,
-                            payment_amount: paymentAmount
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                alert("Payment successful! New balance: $" + response.new_balance +
-                                    " | Trips: " + response.new_trips);
-                                location.reload(); // Refresh to update balance & trips
-                            } else {
-                                alert("Error updating balance.");
-                            }
-                        }
-                    });
-                });
-
-
-
-                /**
-                 * ✅ SEARCH CUSTOMER BY PHONE
-                 * - Searches for a customer and updates the table dynamically.
-                 */
-                $('.payment-btn').on('click', function() {
-                    var driverName = $(this).data('driver-name');
-                    var balance = $(this).data('balance');
-
-                    $('#modalDriverName').text(driverName);
-                    $('#modalBalance').text(balance);
-                });
-
-
-                $('#searchBtn').on('click', function() {
-                    let phone = $('#searchPhone').val().trim();
-
-                    $.ajax({
-                        url: "{{ route('admin.searchCustomer') }}",
-                        type: "GET",
-                        data: {
-                            phone: phone
-                        },
-                        success: function(response) {
-                            let tableBody = $('tbody');
-                            tableBody.empty(); // Clear previous results
-
-                            if (response.length > 0) {
-                                $.each(response, function(index, customer) {
-                                    tableBody.append(`
-                                        <tr>
-                                            <td>${customer.id}</td>
-                                            <td>${customer.customer}</td>
-                                            <td>${customer.contact_person}</td>
-                                            <td>${customer.phone}</td>
-                                            <td>${customer.email}</td>
-                                            <td>${customer.address}</td>
-                                            <td>${customer.balance}</td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm editDriver"
-                                                    data-id="${customer.id}"
-                                                    data-supplier_name="${customer.customer}"
-                                                    data-contact_person="${customer.contact_person}"
-                                                    data-phone="${customer.phone}"
-                                                    data-email="${customer.email}"
-                                                    data-balance="${customer.balance}"
-                                                    data-address="${customer.address}"
-                                                    data-bs-toggle="modal" data-bs-target="#editDriverModal">
-                                                    <i class="fa fa-edit text-white"></i>
-                                                </button>
-                                                <button class="btn btn-danger btn-sm deletedriver"
-                                                    data-id="${customer.id}">
-                                                    <i class="fa fa-trash text-white"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `);
-                                });
-                            } else {
-                                tableBody.append(
-                                    `<tr><td colspan="8" class="text-center">No results found</td></tr>`
-                                );
-                            }
-                        }
-                    });
-                });
-
-
-                /**
-                 * ✅ SAVE DRIVER RECORD
-                 * - Save a driver record via AJAX.
-                 */
-
-                $('#SupplierForm').submit(function(e) {
+                $("#DriverForm").submit(function(e) {
                     e.preventDefault();
-                    var formData = $(this).serialize();
+                    let formData = $(this).serialize();
+
                     $.ajax({
                         url: "{{ route('driver.driverStore') }}",
                         type: "POST",
                         data: formData,
                         success: function(response) {
-                            Swal.fire({
-                                toast: true,
-                                position: "top",
-                                icon: "success",
-                                title: "Driver added successfully!",
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
+                            if (response.success && response.driver) {
+                                let driver = response.driver;
 
-                            $('#DriverModal').modal('hide');
-                            $('#SupplierForm')[0].reset();
+                                // ✅ Show success message
+                                Swal.fire({
+                                    toast: true,
+                                    position: "top",
+                                    icon: "success",
+                                    title: "Driver added successfully!",
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
 
-                            setTimeout(function() {
-                                location.reload();
-                            }, 1000);
+                                // ✅ Close modal properly
+                                $("#DriverModal").modal("hide");
+                                $("#DriverForm")[0].reset();
+                                $(".modal-backdrop").remove();
+                                $("body").removeClass("modal-open");
+
+                                // ✅ Add new row dynamically
+                                let newRow = `
+                                <tr id="classRow_${driver.id}">
+                                    <td>${driver.id}</td>
+                                    <td>${driver.name}</td>
+                                    <td>${driver.vehicle_number}</td>
+                                    <td>${driver.phone}</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm editDriver"
+                                            data-id="${driver.id}"
+                                            data-name="${driver.name}"
+                                            data-vehicle_number="${driver.vehicle_number}"
+                                            data-phone="${driver.phone}"
+                                            data-bs-toggle="modal" data-bs-target="#editDriverModal">
+                                            <i class="fa fa-edit text-white"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm deleteDriver" data-id="${driver.id}">
+                                            <i class="fa fa-trash text-white"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+
+                                $("tbody").prepend(newRow); // ✅ Add new row to top of table
+                            }
                         },
                         error: function(xhr) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessage = "";
-
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessage = "";
                             $.each(errors, function(key, value) {
                                 errorMessage += value + "\n";
                             });
@@ -392,11 +363,10 @@
                 });
 
                 /**
-                 * ✅ DELETE DRIVER RECORD
-                 * - Removes a driver record via AJAX.
+                 * ✅ DELETE DRIVER RECORD - Works for both new & existing records
                  */
-                $(document).on("click", ".deletedriver", function() {
-                    let id = $(this).data("id"); // Get driver ID from the button
+                $(document).on("click", ".deleteDriver", function() {
+                    let driverId = $(this).data("id");
 
                     Swal.fire({
                         title: "Are you sure?",
@@ -410,29 +380,24 @@
                         if (result.isConfirmed) {
                             $.ajax({
                                 url: "{{ route('driver.deleteDriver', ':id') }}".replace(":id",
-                                    id),
+                                    driverId),
                                 type: "DELETE",
                                 data: {
                                     _token: "{{ csrf_token() }}"
                                 },
-                                success: function(response) {
-                                    Swal.fire({
-                                        title: "Deleted!",
-                                        text: "Driver deleted successfully.",
-                                        icon: "success",
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    });
+                                success: function() {
+                                    Swal.fire("Deleted!", "Driver deleted successfully.",
+                                        "success");
 
-                                    // Remove the row smoothly
-                                    $("#classRow_" + id).fadeOut(500, function() {
+                                    // ✅ Remove row smoothly
+                                    $("#classRow_" + driverId).fadeOut(500, function() {
                                         $(this).remove();
                                     });
                                 },
                                 error: function(xhr) {
                                     Swal.fire("Error!",
                                         "Failed to delete driver. Try again.", "error");
-                                    console.log("AJAX Error:", xhr.responseText);
+                                    console.log(xhr.responseText);
                                 }
                             });
                         }
@@ -440,50 +405,43 @@
                 });
 
                 /**
-                 * ✅ EDIT DRIVER - SHOW MODAL DATA
-                 * - Fills the modal with existing driver data.
+                 * ✅ EDIT DRIVER - Works for both new & existing records
                  */
+                $(document).on("click", ".editDriver", function() {
+                    let id = $(this).data("id");
+                    let name = $(this).data("name");
+                    let vehicle_number = $(this).data("vehicle_number");
+                    let phone = $(this).data("phone");
+                    let no_of_trips = $(this).data("no_of_trips");
+                    let balance = $(this).data("balance");
 
-                $('.editDriver').on('click', function() {
-                    let id = $(this).data('id');
-                    let name = $(this).data('name');
-                    let vehicle_number = $(this).data('vehicle_number');
-                    let phone = $(this).data('phone');
-                    let balance = $(this).data('balance');
-                    let number_of_trips = $(this).data('number_of_trips');
-
-
-                    // Fill the modal fields
-                    $('#edit_driver_id').val(id);
-                    $('#edit_name').val(name);
-                    $('#edit_vehicle_number').val(vehicle_number);
-                    $('#edit_phone').val(phone);
-                    $('#edit_number_of_trips').val(number_of_trips);
-                    $('#edit_balance').val(balance);
-
-
+                    // ✅ Fill the modal fields
+                    $("#edit_driver_id").val(id);
+                    $("#edit_name").val(name);
+                    $("#edit_vehicle_number").val(vehicle_number);
+                    $("#edit_phone").val(phone);
+                    $("#edit_no_of_trips").val(no_of_trips);
+                    $("#edit_balance").val(balance);
                 });
 
-
                 /**
-                 * ✅ HANDLE DRIVER UPDATE FORM SUBMISSION
-                 * - Sends an AJAX request to update driver details.
+                 * ✅ UPDATE DRIVER RECORD - Works for both new & existing records
                  */
-                $('#editDriverForm').submit(function(e) {
-                    e.preventDefault(); // Prevent default form submission
+                $("#editDriverForm").submit(function(e) {
+                    e.preventDefault();
 
-                    let driverid = $('#edit_driver_id').val(); // Get class ID
+                    let driverId = $("#edit_driver_id").val();
                     let formData = {
                         _token: "{{ csrf_token() }}",
-                        name: $('#edit_name').val(),
-                        vehicle_number: $('#edit_vehicle_number').val(), // Corrected key name
-                        phone: $('#edit_phone').val(),
-                        balance: $('#edit_balance').val(),
-                        number_of_trips: $('#edit_number_of_trips').val(),
+                        name: $("#edit_name").val(),
+                        vehicle_number: $("#edit_vehicle_number").val(),
+                        phone: $("#edit_phone").val(),
+                        no_of_trips: $("#edit_no_of_trips").val(),
+                        balance: $("#edit_balance").val(),
                     };
+
                     $.ajax({
-                        url: "{{ route('driver.UpdateDriver', ':id') }}".replace(':id',
-                            driverid), // Fixed route name
+                        url: "{{ route('driver.UpdateDriver', ':id') }}".replace(":id", driverId),
                         type: "PUT",
                         data: formData,
                         success: function(response) {
@@ -497,31 +455,25 @@
                                     duration: 3000
                                 }).showToast();
 
-                                // Update the table row dynamically
-                                $('#classRow_' + driverid).find('td:nth-child(2)').text(response
+                                // ✅ Update table row dynamically
+                                $("#classRow_" + driverId).find("td:nth-child(2)").text(response
                                     .data.name);
-                                $('#classRow_' + driverid).find('td:nth-child(3)').text(response
-                                    .data
-                                    .vehicle_number);
-                                $('#classRow_' + driverid).find('td:nth-child(4)').text(response
+                                $("#classRow_" + driverId).find("td:nth-child(3)").text(response
+                                    .data.vehicle_number);
+                                $("#classRow_" + driverId).find("td:nth-child(4)").text(response
                                     .data.phone);
-                                $('#classRow_' + driverid).find('td:nth-child(7)').text(response
+                                $("#classRow_" + driverId).find("td:nth-child(5)").text(response
+                                    .data.no_of_trips);
+                                $("#classRow_" + driverId).find("td:nth-child(6)").text(response
                                     .data.balance);
-                                $('#classRow_' + driverid).find('td:nth-child(6)').text(response
-                                    .data
-                                    .number_of_trips);
 
-
-                                // Hide modal properly
-                                $('#editDriverModal').modal('hide');
-                                $('.modal-backdrop').remove();
-                                $('body').removeClass('modal-open');
-
-                                // Refresh page after 1.5 seconds
-                                setTimeout(() => location.reload(), 1500);
+                                // ✅ Hide modal properly
+                                $("#editDriverModal").modal("hide");
+                                $(".modal-backdrop").remove();
+                                $("body").removeClass("modal-open");
                             } else {
                                 Toastify({
-                                    text: "Error updating supplier.",
+                                    text: "Error updating driver.",
                                     backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
                                     className: "error",
                                     gravity: "top",
@@ -542,8 +494,16 @@
                             }).showToast();
                         }
                     });
-
                 });
+
+                /**
+                 * ✅ ENSURE "Add New Driver" BUTTON WORKS AFTER ADDING A DRIVER
+                 */
+                $(document).on("click", '[data-bs-toggle="modal"]', function() {
+                    let targetModal = $(this).data("bs-target");
+                    $(targetModal).modal("show");
+                });
+
             });
         </script>
     @endsection

@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
     <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+<!-- Load jQuery First -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Load Bootstrap Bundle (JS & Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
@@ -135,13 +140,32 @@
                             </a>
                         @endif
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('driver.create') }}">
-                            <i class="fa fa-truck menu-icon"></i>
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#driverMenu" role="button" aria-expanded="false" aria-controls="driverMenu">
+                            <i class="icon-layout menu-icon"></i>
                             <span class="menu-title">Driver Management</span>
+                            <i class="menu-arrow"></i>
                         </a>
+                        <div class="collapse" id="driverMenu">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('driver.create') }}">
+                                        <i class="fa fa-plus-circle text-white"></i> Add Driver
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{route('driver.DriverDetailsCreate')}}">
+                                        <i class="fa fa-list text-white"></i> Driver Details
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+
+
+
+
+
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('newpurchase') }}">
@@ -152,3 +176,4 @@
 
 
             </nav>
+

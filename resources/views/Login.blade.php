@@ -31,27 +31,104 @@
     <link rel="shortcut icon" href="assets/images/favicon.png" />
 </head>
 
-<div class="content-wrapper d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+
+<style>
+    /* Background Image with Blur Effect */
+    .content-wrapper {
+        background: url('{{ asset("storage/uploads/background.jpg") }}') no-repeat center center/cover;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    /* Dark Overlay for Better Text Visibility */
+    .content-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+        backdrop-filter: blur(5px); /* Subtle blur */
+        z-index: 1;
+    }
+
+    /* Ensure the content is above the blur effect */
+    .row {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Glassmorphism Card */
+    .card {
+        background: rgba(255, 255, 255, 0.15); /* Semi-transparent */
+        backdrop-filter: blur(15px); /* Stronger glass effect */
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+    label {
+        color: #f1f1f1; /* Lighter label text */
+        font-weight: bold;
+    }
+
+    /* Input Field Customization */
+    .form-control {
+        border-radius: 8px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Button Styling */
+    .btn-primary {
+        width: 100%;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: #007bff;
+        border: none;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-outline-primary {
+        width: 100%;
+        border-radius: 8px;
+        font-size: 16px;
+        border-color: #fff;
+        color: #fff;
+        transition: all 0.3s;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #fff;
+        color: #007bff;
+    }
+
+    .alert {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="content-wrapper d-flex justify-content-center align-items-center">
     <div class="row w-100 justify-content-center">
         <div class="col-md-6 col-lg-5 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    @if (session('error'))
-                        <div class="alert alert-danger">
-                            {{ session('error') }}
-                        </div>
-                    @endif
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            @foreach ($errors->all() as $error)
-                                <p>{{ $error }}</p>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <h4 class="card-title text-center">Login</h4>
-                    <form class="forms-sample" action="{{ route('login') }}" method="POST">
+                    <h2 class="card-title text-center text-white ">Login</h2>
+                    <form class="forms-sample" action="{{ route('login.submit') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="email">Email address</label>
@@ -73,10 +150,8 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button type="submit" class="btn btn-primary me-2">Login</button>
                             <a href="{{ url('registrationView') }}" class="btn btn-outline-primary">Register</a>
-
-
                         </div>
                     </form>
 
@@ -88,15 +163,7 @@
 
 
 
-<footer class="footer">
-    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023. Premium <a
-                href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.
-            All rights reserved.</span>
-        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
-                class="ti-heart text-danger ms-1"></i></span>
-    </div>
-</footer>
+
 <!-- partial -->
 </div>
 <!-- main-panel ends -->

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function index(){
-        return view('LoginView');
+        return view('login');
     }
     // Registration View
     public function registrationView(){
@@ -78,7 +78,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('loginView')->with('success', 'Logged out successfully');
+        return redirect()->route('login.form')->with('success', 'Logged out successfully');
     }
 
     public function profile(){

@@ -12,11 +12,12 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('loginView')->with('error', 'You must log in first.');
+            return redirect()->route('login.form')->with('error', 'You must log in first.');
         }
         if (Auth::user()->role !== $role) {
             // return abort(403, 'Unauthorized action. You do not have permission to access this page.');
-            return redirect()->route('loginView')->with('error', 'Access denied! Admins only.');
+            return redirect()->route('unauthorized')->with('error', 'Access denied! Admins only.');;
+
         }
         return $next($request);
     }

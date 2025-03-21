@@ -27,32 +27,20 @@ class SupplierController extends Controller
 
     public function StoreSupplier(Request $request)
     {
-        // Validate input data
-        $request->validate([
+        $validated = $request->validate([
             'supplier_name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
-            'phone' => 'nullable|numeric|digits_between:7,15',
-            'email' => 'required|email|unique:suppliers,email',
-
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'balance' => 'nullable|numeric',
             'address' => 'nullable|string|max:500',
         ]);
 
-        // Store supplier data
-        $supplier = Supplier::create([
-            'supplier_name' => $request->supplier_name,
-            'contact_person' => $request->contact_person,
-            'phone' => $request->phone,
-            'email' => $request->email,
+        $supplier = Supplier::create($validated);
 
-            'address' => $request->address,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Supplier added successfully!',
-            'data' => $supplier
-        ]);
+        return response()->json(['supplier' => $supplier]);
     }
+
 
     public function DeleteSupplier($id)
     {
@@ -85,5 +73,17 @@ class SupplierController extends Controller
             'data' => $supplier
         ]);
     }
+    public function searchByPhone(Request $request)
+    {
+        $phone = $request->phone;
+
+        $suppliers = Supplier::where('phone', 'LIKE', "%$phone%")->get();
+
+        return response()->json([
+            'success' => true,
+            'suppliers' => $suppliers
+        ]);
+    }
+
 
 }
